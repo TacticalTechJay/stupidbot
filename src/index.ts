@@ -7,7 +7,7 @@ const client = new Client(
   {
     intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildVoiceStates],
   },
-  ['127888387364487168']
+  process.env.DEVS.split(',')
 );
 
 process.on('uncaughtException', async (err) => {
