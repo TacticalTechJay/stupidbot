@@ -1,0 +1,38 @@
+{
+  "name": "stupidmusic",
+  "version": "1.0.0",
+  "description": "Stupid music bot",
+  "main": "index.ts",
+  "author": "Jay",
+  "type": "module",
+  "license": "MIT",
+  "scripts": {
+    "start": "tsup && node --expose-gc dist/index.cjs",
+    "register": "node register.js"
+  },
+  "dependencies": {
+    "@discordjs/voice": "^0.17.0",
+    "discord.js": "^14.16.3",
+    "dotenv": "^16.4.5",
+    "ffmpeg-static": "^5.2.0",
+    "lavalink-client": "^2.4.1",
+    "opusscript": "^0.1.1",
+    "random": "^5.1.1",
+    "sam-js": "^0.3.1",
+    "sodium-native": "^4.3.0"
+  },
+  "packageManager": "yarn@1.22.19+sha1.4ba7fc5c6e704fce2066ecbfb0b0d8976fe62447",
+  "devDependencies": {
+    "@microsoft/api-extractor": "^7.47.11",
+    "@types/node": "^22.9.0",
+    "eslint": "^9.15.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.2.1",
+    "terser": "^5.36.0",
+    "ts-node": "^10.9.2",
+    "tsconfig-paths": "^4.2.0",
+    "tslib": "^2.8.1",
+    "tsup": "^8.3.5",
+    "typescript": "^5.6.3"
+  }
+}
