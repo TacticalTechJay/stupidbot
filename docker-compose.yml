@@ -1,0 +1,65 @@
+services:
+  lavalink:
+    image: ghcr.io/lavalink-devs/lavalink:4
+    container_name: lavalink
+    restart: unless-stopped
+    hostname: lavalink
+    env_file: .env.docker
+    networks:
+      - lavalink
+    environment:
+      _JAVA_OPTIONS: -Xmx6G
+      SERVER_PORT: 2333
+      SERVER_ADDRESS: 0.0.0.0
+      SERVER_HTTP2_ENABLED: false
+      LAVALINK_PLUGINS_0_DEPENDENCY: 'dev.lavalink.youtube:youtube-plugin:c358ae412eeae61f87b6f99acfa57e8b91cc9218'
+      LAVALINK_PLUGINS_0_SNAPSHOT: true
+      LAVALINK_PLUGINS_1_DEPENDENCY: 'com.github.topi314.lavasrc:lavasrc-plugin:4.3.0'
+      LAVALINK_PLUGINS_1_SNAPSHOT: false
+      LAVALINK_PLUGINS_2_DEPENDENCY: 'com.github.topi314.lavasearch:lavasearch-plugin:1.0.0'
+      LAVALINK_PLUGINS_2_SNAPSHOT: false
+      # - LAVALINK_PLUGINS_3_DEPENDENCY=com.dunctebot:skybot-lavalink-plugin:1.7.0
+      LAVALINK_SERVER_SOURCES_YOUTUBE: false
+      LAVALINK_SERVER_SOURCES_BANDCAMP: true
+      LAVALINK_SERVER_SOURCES_SOUNDCLOUD: true
+      LAVALINK_SERVER_SOURCES_TWITCH: true
+      LAVALINK_SERVER_SOURCES_VIMEO: true
+      LAVALINK_SERVER_SOURCES_NICO: true
+      LAVALINK_SERVER_SOURCES_HTTP: true
+      LAVALINK_SERVER_SOURCES_LOCAL: false
+      LAVALINK_SERVER_OPUS_ENCODING_QUALITY: 10
+      LAVALINK_SERVER_RESAMPLING_QUALITY: HIGH
+      LAVALINK_SERVER_YOUTUBE_PLAYLIST_LOAD_LIMIT: 6
+      PLUGINS_LAVASRC_PROVIDERS_0: dzisrc:%ISRC%
+      PLUGINS_LAVASRC_PROVIDERS_1: dzsearch:%QUERY%
+      PLUGINS_LAVASRC_PROVIDERS_2: ytsearch:\"%ISRC%\"
+      PLUGINS_LAVASRC_PROVIDERS_3: ytsearch:%QUERY%
+      PLUGINS_LAVASRC_SOURCES_SPOTIFY: true
+      PLUGINS_LAVASRC_SOURCES_DEEZER: true
+      PLUGINS_LAVASRC_SOURCES_YOUTUBE: true
+      PLUGINS_LAVASRC_SPOTIFY_PLAYLIST_LOAD_LIMIT: 4
+      PLUGINS_LAVASRC_SPOTIFY_ALBUM_LOAD_LIMIT: 4
+      PLUGINS_LAVASRC_SPOTIFY_RESOLVE_ARTISTS_IN_SEARCH: true
+      PLUGINS_LAVASRC_DEEZER_FORMATS: "['FLAC', 'MP3_320', 'MP3_256', 'MP3_128', 'MP3_64', 'AAC_64']"
+      PLUGINS_YOUTUBE_ENABLED: true
+      PLUGINS_YOUTUBE_ALLOW_SEARCH: true
+      PLUGINS_YOUTUBE_ALLOW_DIRECT_VIDEO_IDS: false
+      PLUGINS_YOUTUBE_ALLOW_DIRECT_PLAYLIST_IDS: false
+      PLUGINS_YOUTUBE_CLIENTS_0: MUSIC
+      PLUGINS_YOUTUBE_CLIENTS_1: WEB
+      PLUGINS_YOUTUBE_CLIENTS_2: WEBEMBEDDED
+      PLUGINS_YOUTUBE_CLIENTS_3: IOS
+      PLUGINS_YOUTUBE_CLIENTS_4: TVHTML5EMBEDDED
+  stupidbot:
+    image: node:18
+    container_name: stupidbot
+    restart: unless-stopped
+    working_dir: /bot
+    command: sh -c "yarn install && yarn start"
+    stop_grace_period: 5s
+    volumes:
+      - ./:/bot
+    networks:
+      - lavalink
+networks:
+  lavalink:
