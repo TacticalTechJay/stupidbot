@@ -18,7 +18,6 @@ services:
       LAVALINK_PLUGINS_1_SNAPSHOT: false
       LAVALINK_PLUGINS_2_DEPENDENCY: 'com.github.topi314.lavasearch:lavasearch-plugin:1.0.0'
       LAVALINK_PLUGINS_2_SNAPSHOT: false
-      # - LAVALINK_PLUGINS_3_DEPENDENCY=com.dunctebot:skybot-lavalink-plugin:1.7.0
       LAVALINK_SERVER_SOURCES_YOUTUBE: false
       LAVALINK_SERVER_SOURCES_BANDCAMP: true
       LAVALINK_SERVER_SOURCES_SOUNDCLOUD: true
