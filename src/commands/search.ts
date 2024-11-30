@@ -1,4 +1,5 @@
 import { CommandInteraction, GuildMember } from 'discord.js';
+import { DestroyReasons } from 'lavalink-client/dist/types';
 import Command from 'structures/Command';
 import MusicClient from 'structures/MusicClient';
 import { inspect } from 'util';
@@ -30,6 +31,10 @@ export default class search extends Command {
     if (player.voiceChannelId !== member.voice.channelId)
       return await interaction.reply("No, you can't do that.");
     if (!player.connected) await player.connect();
+    if (player.get('internal_queueempty')) {
+      clearTimeout(player.get('internal_queueempty'));
+      player.set('internal_queueempty', undefined);
+    }
 
     let res;
     try {
@@ -80,6 +85,18 @@ export default class search extends Command {
         },
       ],
     });
+
+    player.set(
+      'internal_queueempty',
+      setTimeout(() => {
+        player.set('internal_queueempty', undefined);
+        if (player.queue.current) {
+          return this.client.lavalink.emit('playerQueueEmptyCancel', player);
+        }
+        this.client.lavalink.emit('playerQueueEmptyEnd', player);
+        player.destroy();
+      }, 31_000)
+    );
 
     await new Promise((r) => setTimeout(r, 30_000));
     if ((await interaction.fetchReply(msg.id)).components[0].components[0].disabled) return;
