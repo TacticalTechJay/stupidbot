@@ -12,10 +12,7 @@ export default class evalC extends Command {
 
   async exec(interaction: CommandInteraction) {
     await interaction.deferReply();
-    let input = interaction.options.get('eval').value as string;
-    if (input.startsWith('```js') || (input.startsWith('```') && input.endsWith('```'))) {
-      input = input.replace(/`/gi, '').replace(/js/gi, '');
-    }
+    const input = interaction.options.get('eval', true).value as string;
     try {
       let evaled;
       if (!!interaction.options.get('async')) {
