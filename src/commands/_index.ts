@@ -16,7 +16,6 @@ import skip from 'commands/skip';
 import stop from 'commands/stop';
 import volume from 'commands/volume';
 import speak from 'commands/speak';
-import bored from 'commands/bored';
 import reload from 'commands/reload';
 import Command from 'structures/Command';
 
@@ -25,7 +24,6 @@ export interface commands {
 }
 
 export default [
-  bored,
   die,
   evalC,
   join,

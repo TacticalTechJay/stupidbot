@@ -244,10 +244,6 @@ const admands = [
     ],
   },
   {
-    name: 'bored',
-    description: 'Bored, might wakawaka',
-  },
-  {
     name: 'die',
     description: 'Kills the bot.',
   },
