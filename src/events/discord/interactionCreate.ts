@@ -72,11 +72,15 @@ export default class interactionCreate extends Event {
         if (!player.playing) {
           await player.play();
           return await interaction.followUp(
-            `Now playing [${res.tracks[0].info.title}](<${res.tracks[0].info.uri}>)`
+            `Now playing [${res.tracks[0].info.title}](<${
+              res.tracks[0].info.uri
+            }>) (IT WAS PLAYED BY ${interaction.user.username.toUpperCase()} :index_pointing_at_the_viewer:)`
           );
         }
         return await interaction.followUp(
-          `Added [${res.tracks[0].info.title}](<${res.tracks[0].info.uri}>) to the queue!`
+          `Added [${res.tracks[0].info.title}](<${
+            res.tracks[0].info.uri
+          }>) to the queue! (IT WAS ADDED BY ${interaction.user.username.toUpperCase()} :index_pointing_at_the_viewer:)`
         );
       }
     }
@@ -84,10 +88,11 @@ export default class interactionCreate extends Event {
     if (!interaction.isChatInputCommand()) return;
 
     const command = this.client.commands.get(interaction.commandName);
-    if (!command) return await interaction.reply({
-      content: 'This command isn\'t available yet.',
-      ephemeral: true,
-    });
+    if (!command)
+      return await interaction.reply({
+        content: "This command isn't available yet.",
+        ephemeral: true,
+      });
     if (command.devOnly && !this.client.devs.includes(interaction.user.id))
       return interaction.reply({ content: 'No', ephemeral: true });
     try {
