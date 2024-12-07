@@ -69,10 +69,16 @@ export default class MusicClient extends Client {
     this.loadCommands();
   }
 
-  async loadEvents() {
-    const events = await import(`.${sep.replace(sep, '/')}events${sep.replace(sep, '/')}_index.cjs`);
+  async loadEvents(): Promise<void> {
+    delete require.cache[
+      require.resolve(`.${sep.replace(sep, '/')}events${sep.replace(sep, '/')}_index.cjs`)
+    ];
+    const events = await import(
+      `.${sep.replace(sep, '/')}events${sep.replace(sep, '/')}_index.cjs?time=${Date.now()}`
+    );
     for (const e of events.default.discord) {
       const event = new e(this);
+      this.removeAllListeners(event.name);
       this.on(event.name, (...args) => {
         // @ts-ignore
         event.exec(...args);
@@ -81,16 +87,17 @@ export default class MusicClient extends Client {
     }
     for (const e of events.default.lavalink) {
       const event = new e(this);
-      // @ts-ignore
+      this.lavalink.removeAllListeners(event.name);
       this.lavalink.on(event.name, (...args) => {
         // @ts-ignore
         event.exec(...args);
       });
       this.events.set(event.name, event);
     }
+    return;
   }
 
-  async loadCommands() {
+  async loadCommands(): Promise<void> {
     const cache =
       require.cache[require.resolve(`.${sep.replace(sep, '/')}commands${sep.replace(sep, '/')}_index.cjs`)];
     if (cache?.exports)
@@ -111,5 +118,6 @@ export default class MusicClient extends Client {
       const command = new c(this);
       this.commands.set(command.name, command);
     }
+    return;
   }
 }

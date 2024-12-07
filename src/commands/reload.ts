@@ -26,6 +26,7 @@ export default class reload extends Command {
         external: ['tsup'],
       });
       await this.client.loadCommands();
+      await this.client.loadEvents();
       return interaction.editReply({
         content: 'Reloaded.',
       });
