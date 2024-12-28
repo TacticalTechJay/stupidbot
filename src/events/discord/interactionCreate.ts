@@ -72,15 +72,11 @@ export default class interactionCreate extends Event {
         if (!player.playing) {
           await player.play();
           return await interaction.followUp(
-            `Now playing [${res.tracks[0].info.title}](<${
-              res.tracks[0].info.uri
-            }>) (IT WAS PLAYED BY ${interaction.user.username.toUpperCase()} :index_pointing_at_the_viewer:)`
+            `Now playing [${res.tracks[0].info.title}](<${res.tracks[0].info.uri}>)`
           );
         }
         return await interaction.followUp(
-          `Added [${res.tracks[0].info.title}](<${
-            res.tracks[0].info.uri
-          }>) to the queue! (IT WAS ADDED BY ${interaction.user.username.toUpperCase()} :index_pointing_at_the_viewer:)`
+          `Added [${res.tracks[0].info.title}](<${res.tracks[0].info.uri}>) to the queue!`
         );
       }
     }
