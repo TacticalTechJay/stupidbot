@@ -11,7 +11,9 @@ const client = new Client(
 );
 
 process.on('uncaughtException', async (err) => {
-  console.log('Caught the exception! >:D\n' + err);
+  console.error(
+    `Got a nasty one...\nIt goes by ${err.name}\nThe message is ${err.message}\nCaused by ${err.cause}\nThe stack is ${err.stack}.`
+  );
   if (client.lavalink.players.size > 0)
     for (const p of client.lavalink.players) {
       const player = client.lavalink.getPlayer(p[0]);
