@@ -3,7 +3,7 @@ import { LavalinkManager } from 'lavalink-client';
 import Event from 'structures/Event';
 import Command from 'structures/Command';
 import { sep } from 'path';
-import { inspect } from 'util';
+import { UUID } from 'node:crypto';
 
 export default class MusicClient extends Client {
   devs: Snowflake[];
@@ -17,6 +17,7 @@ export default class MusicClient extends Client {
       url: string;
     }
   >;
+  cacheTracks: Collection<UUID, String[]>;
   commands: Collection<
     string,
     Command & {
@@ -29,6 +30,7 @@ export default class MusicClient extends Client {
     super(options);
     this.devs = devs;
 
+    this.cacheTracks = new Collection();
     this.prankster = new Collection();
     this.events = new Collection();
     this.commands = new Collection();
