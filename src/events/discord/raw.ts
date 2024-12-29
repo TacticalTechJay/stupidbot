@@ -8,7 +8,7 @@ export default class raw extends Event {
     });
   }
 
-  exec(d) {
-    this.client.lavalink.sendRawData(d);
+  async exec(d) {
+    await this.client.lavalink.sendRawData(d);
   }
 }
