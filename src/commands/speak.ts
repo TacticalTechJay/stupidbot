@@ -70,7 +70,6 @@ export default class speak extends Command {
           this.push(null);
         },
       });
-      const audio = createAudioResource(read);
       connection = joinVoiceChannel({
         channelId: member.voice.channelId,
         guildId: interaction.guild.id,
@@ -81,7 +80,7 @@ export default class speak extends Command {
       const player = createAudioPlayer();
 
       connection.subscribe(player);
-      player.play(audio);
+      player.play(createAudioResource(read));
 
       player.on('stateChange', async (prevState, curState) => {
         if (prevState.status === AudioPlayerStatus.Playing && curState.status === AudioPlayerStatus.Idle) {
