@@ -1,5 +1,5 @@
 import { ButtonBuilder, ButtonStyle, CommandInteraction, EmbedBuilder } from 'discord.js';
-import { randomUUID } from 'node:crypto';
+import { randomUUID, UUID } from 'node:crypto';
 import Command from 'structures/Command';
 import MusicClient from 'structures/MusicClient';
 export default class queue extends Command {
@@ -15,6 +15,17 @@ export default class queue extends Command {
     if (!player || !player.queue.current) return await interaction.reply('The queue is empty!');
 
     const uuid = randomUUID();
+    async function doTimeoutThings(client: MusicClient, uuid: UUID) {
+      const cache = client.cacheTracks.get(uuid);
+      const msg = await interaction.channel.messages.fetch(cache.msgId);
+      if (Date.now() - (cache.lastInteract || msg.createdTimestamp) > 300000) {
+        client.cacheTracks.delete(uuid);
+        return await msg.edit({ components: [] });
+      } else
+        setTimeout(() => {
+          doTimeoutThings(client, uuid);
+        }, 60000);
+    }
 
     const embed = new EmbedBuilder({
       footer: {
@@ -29,47 +40,52 @@ export default class queue extends Command {
       },
     });
 
-    const buttonNext = new ButtonBuilder()
-      .setCustomId('next')
-      .setEmoji({ name: '▶' })
-      .setStyle(ButtonStyle.Primary);
-
-    const buttonPrev = new ButtonBuilder()
-      .setCustomId('prev')
-      .setEmoji({ name: '◀' })
-      .setStyle(ButtonStyle.Primary)
-      .setDisabled(true);
-
     const playerPos = player.queue.current.info.duration - player.position,
       posMins = Math.floor(playerPos / 60_000),
-      posSecs = Math.floor((playerPos - posMins * 60_000) / 1_000);
+      posSecs = Math.floor((playerPos - posMins * 60_000) / 1_000),
+      tracks = player.queue.tracks?.map((t, i) => {
+        const duration = t.info.duration,
+          durMins = Math.floor(duration / 60_000),
+          durSecs = Math.floor((duration - durMins * 60_000) / 1_000);
+        return `**${i + 1}.** [${t.info.title}](${t.info.uri}) by [${t.info.author}](${
+          t.pluginInfo.artistUrl
+        }) [${durMins}:${(durSecs < 10 ? '0' : '') + durSecs}]`;
+      });
 
-    const tracks = player.queue.tracks?.map((t, i) => {
-      const duration = t.info.duration,
-        durMins = Math.floor(duration / 60_000),
-        durSecs = Math.floor((duration - durMins * 60_000) / 1_000);
-      return `**${i + 1}.** [${t.info.title}](${t.info.uri}) by [${t.info.author}](${
-        t.pluginInfo.artistUrl
-      }) [${durMins}:${(durSecs < 10 ? '0' : '') + durSecs}]`;
-    });
+    embed.setDescription(
+      `Now Playing:\n[${player.queue.current.info.title}](${player.queue.current.info.uri}) by [${
+        player.queue.current.info.author
+      }](${player.queue.current.pluginInfo.artistUrl}) [${posMins}:${
+        (posSecs < 10 ? '0' : '') + posSecs
+      } left]\n\nUp next:\n${tracks.length < 1 ? 'No upcoming tracks! :3' : tracks.slice(0, 10).join('\n')}`
+    );
 
-    this.client.cacheTracks.set(uuid, tracks);
-
-    embed.setDescription(`Now Playing:
-[${player.queue.current.info.title}](${player.queue.current.info.uri}) by [${
-      player.queue.current.info.author
-    }](${player.queue.current.pluginInfo.artistUrl}) [${posMins}:${(posSecs < 10 ? '0' : '') + posSecs} left]
-
-Up next:\n${tracks.length < 1 ? 'No upcoming tracks! :3' : tracks.slice(0, 10).join('\n')}`);
-    await interaction.reply({
+    const { id, guildId } = await interaction.reply({
+      fetchReply: true,
       ephemeral: false,
       embeds: [embed],
-      components: [
-        {
-          type: 1,
-          components: [buttonPrev, buttonNext],
-        },
-      ],
+      components:
+        tracks.length > 10
+          ? [
+              {
+                type: 1,
+                components: [
+                  new ButtonBuilder()
+                    .setCustomId('prev')
+                    .setEmoji({ name: '◀' })
+                    .setStyle(ButtonStyle.Primary)
+                    .setDisabled(true),
+                  new ButtonBuilder()
+                    .setCustomId('next')
+                    .setEmoji({ name: '▶' })
+                    .setStyle(ButtonStyle.Primary),
+                ],
+              },
+            ]
+          : [],
     });
+
+    if (tracks.length > 10)
+      this.client.cacheTracks.set(uuid, { msgId: id, guildId, tracks }) && (await doTimeoutThings(this.client, uuid));
   }
 }

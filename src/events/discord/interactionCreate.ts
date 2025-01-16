@@ -92,22 +92,23 @@ export default class interactionCreate extends Event {
 
     if (interaction.isButton()) {
       const player = this.client.lavalink.getPlayer(interaction.guildId);
-      if (!player || !player.queue.current) return;
+      if (!player || !player.queue.current) return await interaction.update({ components: [] });
 
       const args = interaction.message.embeds[0].footer.text.split(' | '),
         page = args[0]
           .split(' ')[1]
           .split('/')
           .map((n) => parseInt(n)),
-        tracks = this.client.cacheTracks.get(args[2] as UUID),
-        nowPlaying = player.queue.current,
-        playerPos = nowPlaying.info.duration - player.position,
+        cache = this.client.cacheTracks.get(args[2] as UUID);
+      if (!cache) return await interaction.update({ components: [] });
+      const { info, pluginInfo } = player.queue.current,
+        playerPos = info.duration - player.position,
         posMins = Math.floor(playerPos / 60_000),
         posSecs = Math.floor((playerPos - posMins * 60_000) / 1_000),
-        npText = `Now Playing:\n[${nowPlaying.info.title}](${nowPlaying.info.uri}) by [${
-          nowPlaying.info.author
-        }](${nowPlaying.pluginInfo.artistUrl}) [${posMins}:${(posSecs < 10 ? '0' : '') + posSecs} left]`,
-        embed = new EmbedBuilder(interaction.message.embeds[0]).setThumbnail(nowPlaying.info.artworkUrl),
+        npText = `Now Playing:\n[${info.title}](${info.uri}) by [${info.author}](${
+          pluginInfo.artistUrl
+        }) [${posMins}:${(posSecs < 10 ? '0' : '') + posSecs} left]`,
+        embed = new EmbedBuilder(interaction.message.embeds[0]).setThumbnail(info.artworkUrl),
         buttonPrev = new ButtonBuilder(
           (interaction.message.components[0].components[0] as ButtonComponent).data
         ),
@@ -115,18 +116,14 @@ export default class interactionCreate extends Event {
           (interaction.message.components[0].components[1] as ButtonComponent).data
         );
 
-      if (
-        Date.now() - (interaction.message.editedTimestamp || interaction.message.createdTimestamp) >
-        300000
-      ) {
-        this.client.cacheTracks.delete(args[2] as UUID);
-        return await interaction.update({ components: [] });
-      }
+      this.client.cacheTracks.set(args[2] as UUID, { ...cache, lastInteract: Date.now() });
 
       if (interaction.customId === 'next') {
-        const trackSel = tracks.slice(page[0] * 10, 10 + page[0] * 10);
+        const trackSel = cache.tracks.slice(page[0] * 10, 10 + page[0] * 10);
         embed
-          .setFooter({ text: `Page: ${page[0] + 1}/${page[1]} | Tracks: ${tracks.length} | ${args[2]}` })
+          .setFooter({
+            text: `Page: ${page[0] + 1}/${page[1]} | Tracks: ${cache.tracks.length} | ${args[2]}`,
+          })
           .setDescription(
             `${npText}\n\nUp next:\n${trackSel.length < 1 ? 'No upcoming tracks! :3' : trackSel.join('\n')}`
           );
@@ -138,9 +135,11 @@ export default class interactionCreate extends Event {
         });
       }
       if (interaction.customId === 'prev') {
-        const trackSel = tracks.slice((page[0] - 2) * 10, 10 + (page[0] - 2) * 10);
+        const trackSel = cache.tracks.slice((page[0] - 2) * 10, 10 + (page[0] - 2) * 10);
         embed
-          .setFooter({ text: `Page: ${page[0] - 1}/${page[1]} | Tracks: ${tracks.length} | ${args[2]}` })
+          .setFooter({
+            text: `Page: ${page[0] - 1}/${page[1]} | Tracks: ${cache.tracks.length} | ${args[2]}`,
+          })
           .setDescription(
             `${npText}\n\nUp next:\n${trackSel.length < 1 ? 'No upcoming tracks! :3' : trackSel.join('\n')}`
           );

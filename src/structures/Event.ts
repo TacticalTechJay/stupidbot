@@ -1,11 +1,15 @@
+import { ClientEvents } from 'discord.js';
+import { LavalinkManagerEvents } from 'lavalink-client/dist/types';
 import Client from 'structures/MusicClient';
 
 export default class Event {
   client: Client;
-  name: string | null;
+  name: keyof ClientEvents | keyof LavalinkManagerEvents;
   constructor(
     client: Client,
-    options = {
+    options: {
+      name: keyof ClientEvents | keyof LavalinkManagerEvents
+    } = {
       name: null,
     }
   ) {
