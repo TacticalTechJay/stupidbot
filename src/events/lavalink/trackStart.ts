@@ -11,15 +11,16 @@ export default class trackStart extends Event {
   }
 
   async exec(p: Player & { lastMsgId: Snowflake }, t: Track) {
-    let channel = (this.client.channels.cache.get(p.textChannelId) ??
-      (await this.client.channels.fetch(p.textChannelId))) as TextChannel;
-    if (!p.lastMsgId)
-      return (p.lastMsgId = (await channel.send(`Now playing ${t.info.title} by ${t.info.author}`)).id);
     try {
+      let channel = (this.client.channels.cache.get(p.textChannelId) ??
+        (await this.client.channels.fetch(p.textChannelId))) as TextChannel;
+      if (!p.lastMsgId)
+        return (p.lastMsgId = (await channel.send(`Now playing ${t.info.title} by ${t.info.author}`)).id);
       await channel.messages.delete(p.lastMsgId);
+      return (p.lastMsgId = (await channel.send(`Now playing ${t.info.title} by ${t.info.author}`)).id);
     } catch (e) {
+      console.error(e);
       void e;
     }
-    return (p.lastMsgId = (await channel.send(`Now playing ${t.info.title} by ${t.info.author}`)).id);
   }
 }
