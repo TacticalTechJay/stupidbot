@@ -17,7 +17,10 @@ export default class MusicClient extends Client {
       url: string;
     }
   >;
-  cacheTracks: Collection<UUID, { msgId: Snowflake; guildId: Snowflake; tracks: string[]; lastInteract?: number }>;
+  cacheTracks: Collection<
+    UUID,
+    { msgId: Snowflake; guildId: Snowflake; tracks: string[]; lastInteract?: number }
+  >;
   commands: Collection<
     string,
     Command & {
