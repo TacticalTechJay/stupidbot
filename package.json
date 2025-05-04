@@ -15,7 +15,7 @@
     "discord.js": "^14.16.3",
     "dotenv": "^16.4.5",
     "ffmpeg-static": "^5.2.0",
-    "lavalink-client": "^2.4.1",
+    "lavalink-client": "^2.5.1",
     "opusscript": "^0.1.1",
     "random": "^5.1.1",
     "sam-js": "^0.3.1",
