@@ -76,10 +76,10 @@ const commands = [
             name: 'Spotify',
             value: 'spsearch:',
           },
-          {
-            name: 'Deezer',
-            value: 'dzsearch:',
-          },
+          // {
+          //   name: 'Deezer',
+          //   value: 'dzsearch:',
+          // },
           {
             name: 'SoundCloud',
             value: 'scsearch:',
@@ -221,6 +221,26 @@ const commands = [
       },
     ],
   },
+  {
+    type: 1,
+    name: 'move',
+    description: 'Move songs around the queue.',
+    options: [
+      {
+        type: 10,
+        name: 'track',
+        description: 'The track you wanna move',
+        required: true,
+        min_value: 1,
+      },
+      {
+        type: 10,
+        name: 'to',
+        description: 'Position to',
+        min_value: 1,
+      },
+    ],
+  },
 ];
 
 const admands = [
@@ -250,6 +270,10 @@ const admands = [
   {
     name: 'reload',
     description: 'Reload the bot.',
+  },
+  {
+    name: 'test',
+    description: 'Testing discord changes.',
   },
 ];
 
