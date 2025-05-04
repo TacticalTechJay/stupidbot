@@ -3,6 +3,7 @@ import {
   ButtonBuilder,
   ButtonComponent,
   ButtonInteraction,
+  ButtonStyle,
   CommandInteraction,
   EmbedBuilder,
   GuildMember,
@@ -21,6 +22,11 @@ export default class interactionCreate extends Event {
   async exec(interaction: CommandInteraction | StringSelectMenuInteraction | ButtonInteraction) {
     if (interaction.isStringSelectMenu()) {
       if (interaction.customId === 'music_search') {
+        if (
+          Date.now() - interaction.message.createdTimestamp > 30_000 ||
+          !(interaction.member as GuildMember).voice?.channelId
+        )
+          return await interaction.message.delete();
         const member = interaction.member as GuildMember;
         const player =
           this.client.lavalink.getPlayer(interaction.guildId) ??
@@ -32,6 +38,8 @@ export default class interactionCreate extends Event {
             selfMute: false,
             volume: 100,
           });
+
+        if (!player.connected) await player.connect();
 
         let res;
         try {
@@ -91,8 +99,35 @@ export default class interactionCreate extends Event {
     }
 
     if (interaction.isButton()) {
+      if (interaction.customId.match(/^\w+Test/)) {
+        if (!this.client.devs.includes(interaction.user.id))
+          return await interaction.reply({
+            content: 'Nuh uh!',
+            flags: 'Ephemeral',
+          });
+        try {
+          await interaction.update({
+            content: `\`\`\`\n${inspect(interaction.message.components, false, 4, false)}\n\`\`\``,
+            components: [],
+          });
+        } catch (e) {
+          await interaction.update({ content: 'Check console. Too big', components: [] });
+          console.log(inspect(interaction.message.components, false, 10, true));
+        }
+        return;
+      }
       const player = this.client.lavalink.getPlayer(interaction.guildId);
-      if (!player || !player.queue.current) return await interaction.update({ components: [] });
+      const buttonClose = new ButtonBuilder()
+        .setCustomId('close')
+        .setEmoji({ name: '❌' })
+        .setStyle(ButtonStyle.Secondary);
+      if (interaction.customId === 'close')
+        return (
+          (await interaction.message.delete()) &&
+          this.client.cacheTracks.delete(interaction.message.embeds[0].footer.text.split(' | ')[2] as UUID)
+        );
+      if (!player || !player.queue.current)
+        return await interaction.update({ components: [{ type: 1, components: [buttonClose] }] });
 
       const args = interaction.message.embeds[0].footer.text.split(' | '),
         page = args[0]
@@ -100,7 +135,7 @@ export default class interactionCreate extends Event {
           .split('/')
           .map((n) => parseInt(n)),
         cache = this.client.cacheTracks.get(args[2] as UUID);
-      if (!cache) return await interaction.update({ components: [] });
+      if (!cache) return await interaction.update({ components: [{ type: 1, components: [buttonClose] }] });
       const { info, pluginInfo } = player.queue.current,
         playerPos = info.duration - player.position,
         posMins = Math.floor(playerPos / 60_000),
@@ -109,12 +144,10 @@ export default class interactionCreate extends Event {
           pluginInfo.artistUrl
         }) [${posMins}:${(posSecs < 10 ? '0' : '') + posSecs} left]`,
         embed = new EmbedBuilder(interaction.message.embeds[0]).setThumbnail(info.artworkUrl),
-        buttonPrev = new ButtonBuilder(
-          (interaction.message.components[0].components[0] as ButtonComponent).data
-        ),
-        buttonNext = new ButtonBuilder(
-          (interaction.message.components[0].components[1] as ButtonComponent).data
-        );
+        // @ts-ignore
+        buttonPrev = new ButtonBuilder(interaction.message.components[0].components[0].data),
+        // @ts-ignore
+        buttonNext = new ButtonBuilder(interaction.message.components[0].components[1].data);
 
       this.client.cacheTracks.set(args[2] as UUID, { ...cache, lastInteract: Date.now() });
 
@@ -131,7 +164,7 @@ export default class interactionCreate extends Event {
         if (page[0] + 1 == page[1]) buttonNext.setDisabled(true);
         return await interaction.update({
           embeds: [embed],
-          components: [{ type: 1, components: [buttonPrev, buttonNext] }],
+          components: [{ type: 1, components: [buttonPrev, buttonNext, buttonClose] }],
         });
       }
       if (interaction.customId === 'prev') {
@@ -147,7 +180,7 @@ export default class interactionCreate extends Event {
         if (page[0] - 1 < page[1]) buttonNext.setDisabled(false);
         return await interaction.update({
           embeds: [embed],
-          components: [{ type: 1, components: [buttonPrev, buttonNext] }],
+          components: [{ type: 1, components: [buttonPrev, buttonNext, buttonClose] }],
         });
       }
     }
@@ -157,10 +190,10 @@ export default class interactionCreate extends Event {
     if (!command)
       return await interaction.reply({
         content: "This command isn't available yet.",
-        ephemeral: true,
+        flags: 'Ephemeral',
       });
     if (command.devOnly && !this.client.devs.includes(interaction.user.id))
-      return interaction.reply({ content: 'No', ephemeral: true });
+      return interaction.reply({ content: 'No', flags: 'Ephemeral' });
     try {
       return command.exec(interaction);
     } catch (e) {
