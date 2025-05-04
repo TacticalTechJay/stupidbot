@@ -1,4 +1,6 @@
 .env
-.env.docker
+.env.**
+.dev
+.dev.**
 dist/
 node_modules
