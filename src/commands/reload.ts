@@ -13,7 +13,7 @@ export default class reload extends Command {
 
   async exec(interaction: CommandInteraction) {
     try {
-      await interaction.deferReply({ ephemeral: true });
+      await interaction.deferReply({ flags: 'Ephemeral' });
       await build({
         entry: ['src/index.ts', 'src/commands/_index.ts', 'src/events/_index.ts'],
         platform: 'node',
@@ -27,7 +27,7 @@ export default class reload extends Command {
       });
       await this.client.loadCommands();
       await this.client.loadEvents();
-      return interaction.editReply({
+      return await interaction.editReply({
         content: 'Reloaded.',
       });
     } catch (e) {

@@ -15,18 +15,30 @@ export default class queue extends Command {
     if (!player || !player.queue.current) return await interaction.reply('The queue is empty!');
 
     const uuid = randomUUID();
+    const buttonClose = new ButtonBuilder()
+      .setCustomId('close')
+      .setEmoji({ name: '❌' })
+      .setStyle(ButtonStyle.Secondary);
     async function doTimeoutThings(client: MusicClient, uuid: UUID) {
       const cache = client.cacheTracks.get(uuid);
-      const msg = await interaction.channel.messages.fetch(cache.msgId);
+      if (!cache) return;
+      const msg = await interaction.channel.messages.fetch(cache?.msgId);
+      if (!msg) return;
       if (Date.now() - (cache.lastInteract || msg.createdTimestamp) > 300000) {
         client.cacheTracks.delete(uuid);
-        return await msg.edit({ components: [] });
+        return await msg.edit({
+          components: [
+            {
+              type: 1,
+              components: [buttonClose],
+            },
+          ],
+        });
       } else
         setTimeout(() => {
           doTimeoutThings(client, uuid);
         }, 60000);
     }
-
     const embed = new EmbedBuilder({
       footer: {
         text: `Page: 1/${
@@ -39,7 +51,6 @@ export default class queue extends Command {
         name: `| ${interaction.guild.name}'s Queue`,
       },
     });
-
     const playerPos = player.queue.current.info.duration - player.position,
       posMins = Math.floor(playerPos / 60_000),
       posSecs = Math.floor((playerPos - posMins * 60_000) / 1_000),
@@ -51,7 +62,6 @@ export default class queue extends Command {
           t.pluginInfo.artistUrl
         }) [${durMins}:${(durSecs < 10 ? '0' : '') + durSecs}]`;
       });
-
     embed.setDescription(
       `Now Playing:\n[${player.queue.current.info.title}](${player.queue.current.info.uri}) by [${
         player.queue.current.info.author
@@ -59,10 +69,8 @@ export default class queue extends Command {
         (posSecs < 10 ? '0' : '') + posSecs
       } left]\n\nUp next:\n${tracks.length < 1 ? 'No upcoming tracks! :3' : tracks.slice(0, 10).join('\n')}`
     );
-
-    const { id, guildId } = await interaction.reply({
-      fetchReply: true,
-      ephemeral: false,
+    const queueMessage = await interaction.reply({
+      withResponse: true,
       embeds: [embed],
       components:
         tracks.length > 10
@@ -79,13 +87,25 @@ export default class queue extends Command {
                     .setCustomId('next')
                     .setEmoji({ name: '▶' })
                     .setStyle(ButtonStyle.Primary),
+                  buttonClose,
                 ],
               },
             ]
-          : [],
+          : [
+              {
+                type: 1,
+                components: [buttonClose],
+              },
+            ],
     });
 
     if (tracks.length > 10)
-      this.client.cacheTracks.set(uuid, { msgId: id, guildId, tracks }) && (await doTimeoutThings(this.client, uuid));
+      this.client.cacheTracks.set(uuid, {
+        msgId: queueMessage.resource.message.id,
+        guildId: interaction.guildId,
+        tracks,
+      }) && (await doTimeoutThings(this.client, uuid));
+
+    return;
   }
 }

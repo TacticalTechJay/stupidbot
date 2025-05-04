@@ -14,18 +14,18 @@ export default class prank extends Command {
     const user = interaction.options.get('prankee').member as GuildMember;
 
     if (!!this.client.prankster.get(user.id))
-      return await interaction.reply({ content: "There's already something queued up", ephemeral: true });
+      return await interaction.reply({ content: "There's already something queued up", flags: 'Ephemeral' });
 
     if (user.id === this.client.user.id)
-      return await interaction.reply({ content: 'How about I prank you instead?', ephemeral: true });
+      return await interaction.reply({ content: 'How about I prank you instead?', flags: 'Ephemeral' });
 
     if (user.user.bot)
-      return await interaction.reply({ content: "Useless, don't pick them.", ephemeral: true });
+      return await interaction.reply({ content: "Useless, don't pick them.", flags: 'Ephemeral' });
 
     if (!attch.contentType?.match(/^(video|audio)\//i))
       return await interaction.reply({
         content: "This ain't quite the right type of file I was expecting. Pick another.",
-        ephemeral: true,
+        flags: 'Ephemeral',
       });
 
     this.client.prankster.set(user.id, {
@@ -35,6 +35,6 @@ export default class prank extends Command {
       textchannel: interaction.channelId,
     });
 
-    return await interaction.reply({ content: "Now wait, it'll happen in due time.", ephemeral: true });
+    return await interaction.reply({ content: "Now wait, it'll happen in due time.", flags: 'Ephemeral' });
   }
 }

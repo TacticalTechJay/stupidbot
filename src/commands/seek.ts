@@ -29,7 +29,7 @@ export default class seek extends Command {
         void e;
         return interaction.reply("Looks like I can't seek through this track... :(");
       }
-    else if (!match) return await interaction.reply({ content: 'Invalid input dum dum', ephemeral: true });
+    else if (!match) return await interaction.reply({ content: 'Invalid input dum dum', flags: 'Ephemeral' });
     const hours = match[1] ? parseInt(match[1]) * 3600_000 : 0,
       minutes = match[2]
         ? hours < 0

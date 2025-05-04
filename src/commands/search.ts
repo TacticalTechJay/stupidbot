@@ -38,7 +38,7 @@ export default class search extends Command {
 
     let res;
     try {
-      await interaction.deferReply({ fetchReply: true });
+      await interaction.deferReply({ withResponse: true });
 
       res = await player.search(
         {
@@ -99,6 +99,7 @@ export default class search extends Command {
     );
 
     await new Promise((r) => setTimeout(r, 30_000));
+    // @ts-ignore
     if ((await interaction.fetchReply(msg.id)).components[0].components[0].disabled) return;
     return await interaction.editReply({
       content: 'Pick your poison',

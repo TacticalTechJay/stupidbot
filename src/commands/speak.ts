@@ -55,11 +55,14 @@ export default class speak extends Command {
     if (!member.voice?.channelId)
       return interaction.reply('You gotta be in a voice channel for this. :neutral_face:');
     if (!!playerr)
-      return interaction.reply({ content: `I can't speak, the mic's with music playing.`, ephemeral: true });
+      return interaction.reply({
+        content: `I can't speak, the mic's with music playing.`,
+        flags: 'Ephemeral',
+      });
     if (!!connection)
       return interaction.reply({
         content: 'I might be speaking already or pranking someone currently',
-        ephemeral: true,
+        flags: 'Ephemeral',
       });
 
     try {
