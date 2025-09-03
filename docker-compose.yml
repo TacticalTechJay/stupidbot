@@ -50,10 +50,25 @@ services:
       PLUGINS_YOUTUBE_CLIENTS_3: IOS
       PLUGINS_YOUTUBE_CLIENTS_4: TVHTML5EMBEDDED
   stupidbot:
-    image: node:18
     container_name: stupidbot
     restart: unless-stopped
-    working_dir: /bot
+    build:
+      dockerfile_inline: |
+        FROM node:lts-alpine
+        WORKDIR /bot
+
+        COPY .yarn ./.yarn
+        COPY package*.json ./
+        COPY yarn*.lock ./
+        COPY tsup.config.ts
+        COPY src ./src
+
+        RUN yarn install --immutable
+        RUN yarn tsup
+        RUN rm -rf /tmp/* /root/*
+        RUN yarn cache clean --all
+
+        ENTRYPOINT ['node', '--expose-gc', 'dist/index.cjs']
     command: sh -c "yarn install && yarn start"
     stop_grace_period: 5s
     volumes:
