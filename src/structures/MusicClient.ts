@@ -20,13 +20,14 @@ export default class MusicClient extends Client {
   >;
   events: Collection<Snowflake, Event>;
 
-  constructor(options, devs: Snowflake[]) {
+  constructor(options) {
     super(options);
-    this.devs = devs;
 
+    this.devs = process.env.DEVS.split(',');
     this.cacheTracks = new Collection();
     this.events = new Collection();
     this.commands = new Collection();
+
     this.lavalink = new LavalinkManager({
       nodes: [
         {
@@ -46,7 +47,6 @@ export default class MusicClient extends Client {
       playerOptions: {
         clientBasedPositionUpdateInterval: 150,
         defaultSearchPlatform: 'spsearch',
-        volumeDecrementer: 0.75,
         onDisconnect: {
           autoReconnect: false,
           destroyPlayer: true,
@@ -65,6 +65,7 @@ export default class MusicClient extends Client {
   }
 
   async loadEvents(): Promise<void> {
+    console.log(`Importing event folder`);
     delete require.cache[
       require.resolve(`.${sep.replace(sep, '/')}events${sep.replace(sep, '/')}_index.cjs`)
     ];
@@ -73,6 +74,7 @@ export default class MusicClient extends Client {
     );
     for (const e of events.default.discord) {
       const event = new e(this);
+      console.log(`Loading ${event.name}:discord`);
       this.removeAllListeners(event.name);
       this.on(event.name, (...args) => {
         // @ts-ignore
@@ -82,6 +84,7 @@ export default class MusicClient extends Client {
     }
     for (const e of events.default.lavalink) {
       const event = new e(this);
+      console.log(`Loading ${event.name}:lavalink`);
       this.lavalink.removeAllListeners(event.name);
       this.lavalink.on(event.name, (...args) => {
         // @ts-ignore
@@ -93,6 +96,7 @@ export default class MusicClient extends Client {
   }
 
   async loadCommands(): Promise<void> {
+    console.log(`Importing command folder`);
     const cache =
       require.cache[require.resolve(`.${sep.replace(sep, '/')}commands${sep.replace(sep, '/')}_index.cjs`)];
     if (cache?.exports)
@@ -111,6 +115,7 @@ export default class MusicClient extends Client {
     );
     for (const c of commands.default) {
       const command = new c(this);
+      console.log(`Loading ${command.name}`);
       this.commands.set(command.name, command);
     }
     return;

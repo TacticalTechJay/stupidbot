@@ -3,17 +3,14 @@ import { GatewayIntentBits, TextChannel } from 'discord.js';
 import 'dotenv/config';
 import Client from 'structures/MusicClient';
 
-const client = new Client(
-  {
-    intents: [
-      GatewayIntentBits.Guilds,
-      GatewayIntentBits.GuildVoiceStates,
-      GatewayIntentBits.GuildMessageReactions,
-      GatewayIntentBits.GuildMembers,
-    ],
-  },
-  process.env.DEVS.split(',')
-);
+const client = new Client({
+  intents: [
+    GatewayIntentBits.Guilds,
+    GatewayIntentBits.GuildVoiceStates,
+    GatewayIntentBits.GuildMessageReactions,
+    GatewayIntentBits.GuildMembers,
+  ],
+});
 
 async function graceKill() {
   if (client.lavalink.players.size > 0)
@@ -36,7 +33,9 @@ async function graceKill() {
   for (const connection of connections) {
     try {
       const channel = (await client.channels.fetch(connection[1].joinConfig.channelId)) as TextChannel;
-      await channel.send("I've encountered either a really bad error or am being put out while doing something.");
+      await channel.send(
+        "I've encountered either a really bad error or am being put out while doing something."
+      );
       connection[1].disconnect();
       await new Promise((r) => setTimeout(r, 100));
       connection[1].destroy();
