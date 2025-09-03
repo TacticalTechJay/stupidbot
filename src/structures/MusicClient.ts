@@ -8,15 +8,6 @@ import { UUID } from 'node:crypto';
 export default class MusicClient extends Client {
   devs: Snowflake[];
   lavalink: LavalinkManager;
-  prankster: Collection<
-    Snowflake,
-    {
-      prankee: Snowflake;
-      prankster: Snowflake;
-      textchannel: Snowflake;
-      url: string;
-    }
-  >;
   cacheTracks: Collection<
     UUID,
     { msgId: Snowflake; guildId: Snowflake; tracks: string[]; lastInteract?: number }
@@ -34,7 +25,6 @@ export default class MusicClient extends Client {
     this.devs = devs;
 
     this.cacheTracks = new Collection();
-    this.prankster = new Collection();
     this.events = new Collection();
     this.commands = new Collection();
     this.lavalink = new LavalinkManager({

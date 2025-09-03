@@ -30,25 +30,6 @@ const commands = [
   },
   {
     type: 1,
-    name: 'prank',
-    description: 'Prank a suckah w/ an audio clip.',
-    options: [
-      {
-        type: 11,
-        name: 'attachy',
-        description: 'Your everyday audio file goes here!',
-        required: true,
-      },
-      {
-        type: 6,
-        name: 'prankee',
-        description: 'The suckah',
-        required: true,
-      },
-    ],
-  },
-  {
-    type: 1,
     name: 'search',
     description: 'Search for your tunes using syllables!',
     options: [

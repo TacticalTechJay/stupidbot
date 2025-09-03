@@ -35,7 +35,6 @@ export default [
   pause,
   play,
   playfile,
-  prank,
   queue,
   reload,
   resume,
