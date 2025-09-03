@@ -1,4 +1,4 @@
-import { ButtonBuilder, ButtonStyle, CommandInteraction, EmbedBuilder } from 'discord.js';
+import { ButtonBuilder, ButtonStyle, ChatInputCommandInteraction, EmbedBuilder } from 'discord.js';
 import { randomUUID, UUID } from 'node:crypto';
 import Command from 'structures/Command';
 import MusicClient from 'structures/MusicClient';
@@ -10,7 +10,7 @@ export default class queue extends Command {
     });
   }
 
-  async exec(interaction: CommandInteraction) {
+  async exec(interaction: ChatInputCommandInteraction) {
     const player = this.client.lavalink.getPlayer(interaction.guildId);
     if (!player || !player.queue.current) return await interaction.reply('The queue is empty!');
 
@@ -63,11 +63,13 @@ export default class queue extends Command {
         }) [${durMins}:${(durSecs < 10 ? '0' : '') + durSecs}]`;
       });
     embed.setDescription(
-      `Now Playing:\n[${player.queue.current.info.title}](${player.queue.current.info.uri}) by [${
-        player.queue.current.info.author
-      }](${player.queue.current.pluginInfo.artistUrl}) [${posMins}:${
-        (posSecs < 10 ? '0' : '') + posSecs
-      } left]\n\nUp next:\n${tracks.length < 1 ? 'No upcoming tracks! :3' : tracks.slice(0, 10).join('\n')}`
+      `Now Playing${(player.repeatMode === 'track' && ' (🔂) ') || ''}:\n[${
+        player.queue.current.info.title
+      }](${player.queue.current.info.uri}) by [${player.queue.current.info.author}](${
+        player.queue.current.pluginInfo.artistUrl || player.queue.current.info.artworkUrl
+      }) [${posMins}:${(posSecs < 10 ? '0' : '') + posSecs} left]\n\nUp next${
+        (player.repeatMode === 'queue' && ' (🔁) ') || ''
+      }:\n${tracks.length < 1 ? 'No upcoming tracks! :3' : tracks.slice(0, 10).join('\n')}`
     );
     const queueMessage = await interaction.reply({
       withResponse: true,

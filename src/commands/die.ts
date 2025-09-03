@@ -1,4 +1,4 @@
-import { CommandInteraction, TextChannel } from 'discord.js';
+import { ChatInputCommandInteraction, TextChannel } from 'discord.js';
 import Command from 'structures/Command';
 import MusicClient from 'structures/MusicClient';
 export default class die extends Command {
@@ -9,7 +9,7 @@ export default class die extends Command {
     });
   }
 
-  async exec(interaction: CommandInteraction) {
+  async exec(interaction: ChatInputCommandInteraction) {
     if (this.client.lavalink.players.size > 0)
       for (const p of this.client.lavalink.players) {
         const player = this.client.lavalink.getPlayer(p[0]);

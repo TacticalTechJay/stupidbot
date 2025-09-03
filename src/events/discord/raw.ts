@@ -1,12 +1,11 @@
 import { GatewayMessageReactionAddDispatch, Routes } from 'discord.js';
-import type { VoicePacket, VoiceServer, VoiceState, ChannelDeletePacket } from 'lavalink-client/dist/types';
+import type { VoicePacket, VoiceServer, VoiceState, ChannelDeletePacket } from 'lavalink-client';
 import Event from 'structures/Event';
 import MusicClient from 'structures/MusicClient';
 
 export default class raw extends Event {
   constructor(client: MusicClient) {
     super(client, {
-      // @ts-expect-error
       name: 'raw',
     });
   }

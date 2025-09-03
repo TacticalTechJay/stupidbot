@@ -1,4 +1,4 @@
-import { CommandInteraction, CommandInteractionOption } from 'discord.js';
+import { ChatInputCommandInteraction } from 'discord.js';
 import Command from 'structures/Command';
 
 export default class move extends Command {
@@ -9,7 +9,7 @@ export default class move extends Command {
     });
   }
 
-  async exec(interaction: CommandInteraction) {
+  async exec(interaction: ChatInputCommandInteraction) {
     const player = this.client.lavalink.getPlayer(interaction.guildId);
     if (!player) return await interaction.reply("You can't move it move it :(");
 

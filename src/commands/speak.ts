@@ -5,12 +5,12 @@ import {
   getVoiceConnection,
   joinVoiceChannel,
 } from '@discordjs/voice';
-import { CommandInteraction, GuildMember } from 'discord.js';
+import { ChatInputCommandInteraction, GuildMember } from 'discord.js';
 import SamJs from 'sam-js';
 import { Readable } from 'stream';
 import Command from 'structures/Command';
 import MusicClient from 'structures/MusicClient';
-import { Track } from 'lavalink-client/dist/types';
+// import { Track } from 'lavalink-client';
 import random from 'random';
 
 export default class speak extends Command {
@@ -21,7 +21,7 @@ export default class speak extends Command {
     });
   }
 
-  async exec(interaction: CommandInteraction) {
+  async exec(interaction: ChatInputCommandInteraction) {
     const playerr = this.client.lavalink.getPlayer(interaction.guildId);
     const member = interaction.member as GuildMember;
     const text = interaction.options.get('text').value as string;
@@ -56,7 +56,7 @@ export default class speak extends Command {
       return interaction.reply('You gotta be in a voice channel for this. :neutral_face:');
     if (!!playerr)
       return interaction.reply({
-        content: `I can't speak, the mic's with music playing.`,
+        content: `I can't speak, the mic's with the music player.`,
         flags: 'Ephemeral',
       });
     if (!!connection)

@@ -1,5 +1,5 @@
-import { CommandInteraction, GuildMember, Snowflake } from 'discord.js';
-import { Player } from 'lavalink-client/dist/types';
+import { ChatInputCommandInteraction, GuildMember, Snowflake } from 'discord.js';
+import { Player } from 'lavalink-client';
 import Command from 'structures/Command';
 import MusicClient from 'structures/MusicClient';
 export default class stop extends Command {
@@ -10,7 +10,7 @@ export default class stop extends Command {
     });
   }
 
-  async exec(interaction: CommandInteraction) {
+  async exec(interaction: ChatInputCommandInteraction) {
     const member = interaction.member as GuildMember;
     const player = this.client.lavalink.getPlayer(interaction.guildId) as Player & {
       lastMsgId: Snowflake;

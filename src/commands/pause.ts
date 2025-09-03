@@ -1,4 +1,4 @@
-import { CommandInteraction, GuildMember } from 'discord.js';
+import { ChatInputCommandInteraction, GuildMember } from 'discord.js';
 import Command from 'structures/Command';
 import MusicClient from 'structures/MusicClient';
 export default class pause extends Command {
@@ -9,7 +9,7 @@ export default class pause extends Command {
     });
   }
 
-  async exec(interaction: CommandInteraction) {
+  async exec(interaction: ChatInputCommandInteraction) {
     const member = interaction.member as GuildMember;
     const player = this.client.lavalink.getPlayer(interaction.guildId);
 

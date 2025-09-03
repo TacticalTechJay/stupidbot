@@ -1,5 +1,5 @@
 import { Snowflake, TextChannel } from 'discord.js';
-import { Player } from 'lavalink-client/dist/types';
+import { Player } from 'lavalink-client';
 import Event from 'structures/Event';
 import MusicClient from 'structures/MusicClient';
 

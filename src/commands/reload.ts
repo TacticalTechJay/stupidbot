@@ -1,4 +1,4 @@
-import { CommandInteraction } from 'discord.js';
+import { ChatInputCommandInteraction } from 'discord.js';
 import Command from 'structures/Command';
 import MusicClient from 'structures/MusicClient';
 import { build } from 'tsup';
@@ -11,7 +11,7 @@ export default class reload extends Command {
     });
   }
 
-  async exec(interaction: CommandInteraction) {
+  async exec(interaction: ChatInputCommandInteraction) {
     try {
       await interaction.deferReply({ flags: 'Ephemeral' });
       await build({

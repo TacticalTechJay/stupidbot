@@ -1,5 +1,5 @@
-import { CommandInteraction, GuildMember } from 'discord.js';
-import { RepeatMode } from 'lavalink-client/dist/types';
+import { ChatInputCommandInteraction, GuildMember } from 'discord.js';
+import { RepeatMode } from 'lavalink-client';
 import Command from 'structures/Command';
 import MusicClient from 'structures/MusicClient';
 export default class loop extends Command {
@@ -10,10 +10,15 @@ export default class loop extends Command {
     });
   }
 
-  async exec(interaction: CommandInteraction) {
+  async exec(interaction: ChatInputCommandInteraction) {
     const member = interaction.member as GuildMember;
-    const type = interaction.options.get('type').value as RepeatMode;
+    const type = interaction.options.get('type')?.value as RepeatMode | undefined;
     const player = this.client.lavalink.getPlayer(interaction.guildId);
+
+    if (!type)
+      return await interaction.reply(
+        player.repeatMode === 'off' ? 'Currently not looping.' : `Looping by ${player.repeatMode}`
+      );
 
     if (!member.voice.channelId) return await interaction.reply('Gotta be in a voice channel. :3');
     if (!player || !player?.queue.current) return await interaction.reply('Nothing is playing!');

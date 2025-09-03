@@ -100,6 +100,15 @@ const commands = [
   {
     name: 'join',
     description: 'Bored? Lonely? Just use this and have a bit of company! ^.^',
+    options: [
+      {
+        type: 7,
+        name: 'channel',
+        description: 'Could specify what channel ahead of time :3c',
+        required: false,
+        channel_types: [2],
+      },
+    ],
   },
   {
     type: 1,
@@ -110,7 +119,7 @@ const commands = [
         type: 3,
         name: 'type',
         description: "The type of loopin'",
-        required: true,
+        required: false,
         choices: [
           {
             name: 'queue',
@@ -137,7 +146,7 @@ const commands = [
         type: 4,
         name: 'level',
         description: 'The volume level.',
-        required: true,
+        required: false,
         min_value: 0,
         max_value: 255,
       },
@@ -218,6 +227,20 @@ const commands = [
         type: 10,
         name: 'to',
         description: 'Position to',
+        min_value: 1,
+      },
+    ],
+  },
+  {
+    type: 1,
+    name: 'remove',
+    description: 'Remove songs from the queue.',
+    options: [
+      {
+        type: 10,
+        name: 'track',
+        description: 'The track you wanna destroy >:3c',
+        required: true,
         min_value: 1,
       },
     ],

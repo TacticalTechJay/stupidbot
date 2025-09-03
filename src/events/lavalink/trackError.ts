@@ -1,5 +1,5 @@
 import { TextChannel } from 'discord.js';
-import { Player, Track } from 'lavalink-client/dist/types';
+import { Player, Track } from 'lavalink-client';
 import Event from 'structures/Event';
 
 export default class trackError extends Event {

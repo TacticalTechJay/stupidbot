@@ -1,4 +1,4 @@
-import { CommandInteraction, GuildMember } from 'discord.js';
+import { ChatInputCommandInteraction, GuildMember } from 'discord.js';
 import Command from 'structures/Command';
 import MusicClient from 'structures/MusicClient';
 export default class volume extends Command {
@@ -9,7 +9,7 @@ export default class volume extends Command {
     });
   }
 
-  async exec(interaction: CommandInteraction) {
+  async exec(interaction: ChatInputCommandInteraction) {
     const member = interaction.member as GuildMember;
     const player = this.client.lavalink.getPlayer(interaction.guildId);
 
@@ -17,7 +17,7 @@ export default class volume extends Command {
     if (!player || !player?.queue.current) return await interaction.reply('Nothing is playing!');
     if (player.voiceChannelId !== member.voice.channelId)
       return await interaction.reply('Wrong voice channel, join mine!');
-    await player.setVolume(interaction.options.get('level').value as number);
+    await player.setVolume(interaction.options.get('level').value as number, false);
     return await interaction.reply(`Changed volume to ${player.volume}%!`);
   }
 }

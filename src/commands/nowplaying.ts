@@ -1,4 +1,4 @@
-import { CommandInteraction } from 'discord.js';
+import { ChatInputCommandInteraction } from 'discord.js';
 import Command from 'structures/Command';
 import MusicClient from 'structures/MusicClient';
 export default class nowplaying extends Command {
@@ -9,7 +9,7 @@ export default class nowplaying extends Command {
     });
   }
 
-  async exec(interaction: CommandInteraction) {
+  async exec(interaction: ChatInputCommandInteraction) {
     const player = this.client.lavalink.getPlayer(interaction.guildId);
     if (!player || !player?.queue.current) return await interaction.reply('Nothing is playing!');
 
@@ -29,11 +29,13 @@ export default class nowplaying extends Command {
       leftoverS = Math.floor((leftover - leftoverM * 60_000) / 1_000);
 
     return await interaction.reply(
-      `Currently playing [${player.queue.current.info.title}](<${player.queue.current.info.uri}>) by ${
-        player.queue.current.info.author
-      }\n${str}\n${posMins}:${(posSecs < 10 ? '0' : '') + posSecs}/${durMins}:${
-        (durSecs < 10 ? '0' : '') + durSecs
-      } (${leftoverM} minute${leftoverM > 1 ? 's' : ''} ${leftoverS} second${leftoverS > 1 ? 's' : ''} left)`
+      `Currently ${player.repeatMode === 'track' ? 'looping over' : 'playing'} [${
+        player.queue.current.info.title
+      }](<${player.queue.current.info.uri}>) by ${player.queue.current.info.author}\n${str}\n${posMins}:${
+        (posSecs < 10 ? '0' : '') + posSecs
+      }/${durMins}:${(durSecs < 10 ? '0' : '') + durSecs} (${leftoverM} minute${
+        leftoverM > 1 ? 's' : ''
+      } ${leftoverS} second${leftoverS > 1 ? 's' : ''} left)`
     );
   }
 }

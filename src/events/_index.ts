@@ -1,7 +1,6 @@
 import interactionCreate from 'events/discord/interactionCreate';
 import raw from 'events/discord/raw';
-import ready from 'events/discord/ready';
-import voiceStateUpdate from 'events/discord/voiceStateUpdate';
+import ready from 'events/discord/clientReady';
 
 import playerQueueEmptyEnd from 'events/lavalink/playerQueueEmptyEnd';
 import trackStart from 'events/lavalink/trackStart';

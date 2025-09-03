@@ -1,4 +1,4 @@
-import { CommandInteraction, GuildMember } from 'discord.js';
+import { ChatInputCommandInteraction, GuildMember } from 'discord.js';
 import Command from 'structures/Command';
 import MusicClient from 'structures/MusicClient';
 import { inspect } from 'util';
@@ -11,7 +11,7 @@ export default class play extends Command {
     });
   }
 
-  async exec(interaction: CommandInteraction) {
+  async exec(interaction: ChatInputCommandInteraction) {
     const member = interaction.member as GuildMember;
     if (!member.voice?.channelId) return await interaction.reply('Gotta be in a voice channel :3');
     const player =
@@ -22,7 +22,7 @@ export default class play extends Command {
         textChannelId: interaction.channelId,
         selfDeaf: true,
         selfMute: false,
-        volume: 100,
+        volume: 75,
       });
 
     if (player.voiceChannelId !== member.voice.channelId)
@@ -55,10 +55,13 @@ export default class play extends Command {
 
     if (res.tracks.length > 0) await player.queue.add(res.tracks[0]);
     else {
-      if (res.loadType === 'error')
-        return await interaction.editReply(
+      if (res.loadType === 'error') {
+        await interaction.editReply(
           'Something cataclysmic has happened that prevents me from loading this! Try something else'
         );
+        console.log(inspect(res, false, 5, true));
+        return;
+      }
       return await interaction.editReply("Couldn't find a track... 😦");
     }
     if (!player.playing) {

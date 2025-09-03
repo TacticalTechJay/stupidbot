@@ -1,4 +1,5 @@
-import { Attachment, CommandInteraction, GuildMember } from 'discord.js';
+import { Attachment, ChatInputCommandInteraction, GuildMember } from 'discord.js';
+import { createWriteStream } from 'fs';
 import Command from 'structures/Command';
 import MusicClient from 'structures/MusicClient';
 
@@ -10,7 +11,7 @@ export default class playfile extends Command {
     });
   }
 
-  async exec(interaction: CommandInteraction) {
+  async exec(interaction: ChatInputCommandInteraction) {
     const member = interaction.member as GuildMember;
     if (!member.voice?.channelId) return await interaction.reply('Gotta be in a voice channel :3');
     const player =
@@ -21,9 +22,9 @@ export default class playfile extends Command {
         textChannelId: interaction.channelId,
         selfDeaf: true,
         selfMute: false,
-        volume: 100,
+        volume: 75,
       });
-    const attch = interaction.options.get('attachy').attachment;
+    const attch = interaction.options.get('attachy', true).attachment;
 
     if (player.voiceChannelId !== member.voice.channelId)
       return await interaction.reply("No, you can't do that.");

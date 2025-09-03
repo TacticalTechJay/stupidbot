@@ -7,9 +7,9 @@ import nowplaying from 'commands/nowplaying';
 import pause from 'commands/pause';
 import play from 'commands/play';
 import playfile from 'commands/playfile';
-import prank from 'commands/prank';
 import queue from 'commands/queue';
 import reload from 'commands/reload';
+import remove from 'commands/remove';
 import resume from 'commands/resume';
 import search from 'commands/search';
 import seek from 'commands/seek';
@@ -37,6 +37,7 @@ export default [
   playfile,
   queue,
   reload,
+  remove,
   resume,
   search,
   seek,

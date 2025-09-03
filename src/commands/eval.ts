@@ -1,4 +1,4 @@
-import { CommandInteraction } from 'discord.js';
+import { ChatInputCommandInteraction } from 'discord.js';
 import Command from 'structures/Command';
 import MusicClient from 'structures/MusicClient';
 import { inspect } from 'util';
@@ -10,7 +10,7 @@ export default class evalC extends Command {
     });
   }
 
-  async exec(interaction: CommandInteraction) {
+  async exec(interaction: ChatInputCommandInteraction) {
     await interaction.deferReply();
     const input = interaction.options.get('eval', true).value as string;
     try {

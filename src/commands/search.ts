@@ -1,5 +1,4 @@
-import { CommandInteraction, GuildMember } from 'discord.js';
-import { DestroyReasons } from 'lavalink-client/dist/types';
+import { ChatInputCommandInteraction, GuildMember } from 'discord.js';
 import Command from 'structures/Command';
 import MusicClient from 'structures/MusicClient';
 import { inspect } from 'util';
@@ -12,7 +11,7 @@ export default class search extends Command {
     });
   }
 
-  async exec(interaction: CommandInteraction) {
+  async exec(interaction: ChatInputCommandInteraction) {
     const member = interaction.member as GuildMember;
     const source = (interaction.options.get('source')?.value || 'spsearch:') as string;
     const query = interaction.options.get('query').value as string;
@@ -26,7 +25,7 @@ export default class search extends Command {
         textChannelId: interaction.channelId,
         selfDeaf: true,
         selfMute: false,
-        volume: 100,
+        volume: 75,
       });
     if (player.voiceChannelId !== member.voice.channelId)
       return await interaction.reply("No, you can't do that.");
@@ -65,7 +64,7 @@ export default class search extends Command {
         durSecs = Math.floor((t.info.duration - durMins * 60_000) / 1_000),
         description = `Duration: ${durMins}:${durSecs} | Author: ${t.info.author}`;
       resp.push({
-        label: t.info.title,
+        label: t.info.title.length > 100 ? t.info.title.substring(0, 100) : t.info.title,
         description: description.length > 100 ? description.substring(0, 100) : description,
         value: t.info.uri,
       });
