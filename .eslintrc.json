@@ -3,6 +3,7 @@
   "extends": ["plugin:prettier/recommended", "plugin:@typescript-eslint/recommended"],
   "plugins": ["unused-imports", "@typescript-eslint"],
   "parser": "@typescript-eslint/parser",
+  "ignorePatterns": ["node_modules", "dist", ".yarn", ".git", ".github", ".vscode"],
   "rules": {
     "linebreak-style": ["error", "unix"],
     "quotes": [

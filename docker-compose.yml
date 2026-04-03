@@ -1,4 +1,12 @@
 services:
+  ejs-api:
+    image: ghcr.io/kikkia/yt-cipher:master
+    container_name: yt-cipher
+    expose:
+      - 8001
+    networks:
+      - lavalink
+    restart: unless-stopped
   lavalink:
     image: ghcr.io/lavalink-devs/lavalink:4
     container_name: lavalink
@@ -12,11 +20,11 @@ services:
       SERVER_PORT: 2333
       SERVER_ADDRESS: 0.0.0.0
       SERVER_HTTP2_ENABLED: false
-      LAVALINK_PLUGINS_0_DEPENDENCY: 'dev.lavalink.youtube:youtube-plugin:c358ae412eeae61f87b6f99acfa57e8b91cc9218'
-      LAVALINK_PLUGINS_0_SNAPSHOT: true
-      LAVALINK_PLUGINS_1_DEPENDENCY: 'com.github.topi314.lavasrc:lavasrc-plugin:4.3.0'
+      LAVALINK_PLUGINS_0_DEPENDENCY: "dev.lavalink.youtube:youtube-plugin:1.18.0"
+      LAVALINK_PLUGINS_0_SNAPSHOT: false
+      LAVALINK_PLUGINS_1_DEPENDENCY: "com.github.topi314.lavasrc:lavasrc-plugin:4.8.1"
       LAVALINK_PLUGINS_1_SNAPSHOT: false
-      LAVALINK_PLUGINS_2_DEPENDENCY: 'com.github.topi314.lavasearch:lavasearch-plugin:1.0.0'
+      LAVALINK_PLUGINS_2_DEPENDENCY: "com.github.topi314.lavasearch:lavasearch-plugin:1.0.0"
       LAVALINK_PLUGINS_2_SNAPSHOT: false
       LAVALINK_SERVER_SOURCES_YOUTUBE: false
       LAVALINK_SERVER_SOURCES_BANDCAMP: true
@@ -32,8 +40,9 @@ services:
       PLUGINS_LAVASRC_PROVIDERS_0: dzisrc:%ISRC%
       PLUGINS_LAVASRC_PROVIDERS_1: dzsearch:%QUERY%
       PLUGINS_LAVASRC_PROVIDERS_2: ytsearch:\"%ISRC%\"
-      PLUGINS_LAVASRC_PROVIDERS_3: ytsearch:%QUERY%
-      PLUGINS_LAVASRC_SOURCES_SPOTIFY: true
+      PLUGINS_LAVASRC_PROVIDERS_3: ytmsearch:%QUERY%
+      PLUGINS_LAVASRC_PROVIDERS_4: ytsearch:%QUERY%
+      PLUGINS_LAVASRC_SOURCES_SPOTIFY: false
       PLUGINS_LAVASRC_SOURCES_DEEZER: true
       PLUGINS_LAVASRC_SOURCES_YOUTUBE: true
       PLUGINS_LAVASRC_SPOTIFY_PLAYLIST_LOAD_LIMIT: 4
@@ -44,35 +53,38 @@ services:
       PLUGINS_YOUTUBE_ALLOW_SEARCH: true
       PLUGINS_YOUTUBE_ALLOW_DIRECT_VIDEO_IDS: false
       PLUGINS_YOUTUBE_ALLOW_DIRECT_PLAYLIST_IDS: false
+      PLUGINS_YOUTUBE_REMOTECIPHER_URL: 'http://ejs-api:8001'
       PLUGINS_YOUTUBE_CLIENTS_0: MUSIC
-      PLUGINS_YOUTUBE_CLIENTS_1: WEB
-      PLUGINS_YOUTUBE_CLIENTS_2: WEBEMBEDDED
-      PLUGINS_YOUTUBE_CLIENTS_3: IOS
-      PLUGINS_YOUTUBE_CLIENTS_4: TVHTML5EMBEDDED
+      PLUGINS_YOUTUBE_CLIENTS_1: ANDROID_VR
+      PLUGINS_YOUTUBE_CLIENTS_2: WEB
+      PLUGINS_YOUTUBE_CLIENTS_3: WEBEMBEDDED
+      PLUGINS_YOUTUBE_CLIENTS_4: TV
   stupidbot:
     container_name: stupidbot
     restart: unless-stopped
+    env_file: .env
     build:
       dockerfile_inline: |
         FROM node:lts-alpine
         WORKDIR /bot
 
-        COPY .yarn ./.yarn
         COPY package*.json ./
-        COPY yarn*.lock ./
-        COPY tsup.config.ts
+        COPY .yarn ./.yarn
+        COPY yarn.lock ./
+        COPY .yarnrc.yml ./
+        COPY eslint.config.mjs ./
+        COPY tsup.config.ts ./
+        COPY tsconfig.json ./
         COPY src ./src
 
+        RUN corepack enable
         RUN yarn install --immutable
-        RUN yarn tsup
         RUN rm -rf /tmp/* /root/*
         RUN yarn cache clean --all
+        RUN yarn tsup
 
-        ENTRYPOINT ['node', '--expose-gc', 'dist/index.cjs']
-    command: sh -c "yarn install && yarn start"
+        ENTRYPOINT ["node", "--expose-gc", "dist/index.cjs"]
     stop_grace_period: 5s
-    volumes:
-      - ./:/bot
     networks:
       - lavalink
 networks:

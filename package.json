@@ -7,32 +7,35 @@
   "type": "module",
   "license": "MIT",
   "scripts": {
-    "start": "tsup && node --expose-gc dist/index.cjs",
+    "start": "eslint && tsup && node --expose-gc dist/index.cjs",
     "register": "node register.js"
   },
   "dependencies": {
-    "@discordjs/voice": "^0.17.0",
-    "discord.js": "^14.16.3",
-    "dotenv": "^16.4.5",
-    "ffmpeg-static": "^5.2.0",
-    "lavalink-client": "^2.5.1",
-    "opusscript": "^0.1.1",
-    "random": "^5.1.1",
-    "sam-js": "^0.3.1",
-    "sodium-native": "^4.3.0"
+    "@discordjs/voice": "^0.19.2",
+    "discord.js": "^14.26.0",
+    "dotenv": "^17.4.0",
+    "ffmpeg-static": "^5.3.0",
+    "lavalink-client": "^2.9.11",
+    "opusscript": "^0.1.1"
   },
-  "packageManager": "yarn@1.22.19+sha1.4ba7fc5c6e704fce2066ecbfb0b0d8976fe62447",
+  "packageManager": "yarn@4.13.0+sha512.5c20ba010c99815433e5c8453112165e673f1c7948d8d2b267f4b5e52097538658388ebc9f9580656d9b75c5cc996f990f611f99304a2197d4c56d21eea370e7",
   "devDependencies": {
-    "@microsoft/api-extractor": "^7.47.11",
-    "@types/node": "^22.9.0",
-    "eslint": "^9.15.0",
-    "eslint-config-prettier": "^9.1.0",
-    "eslint-plugin-prettier": "^5.2.1",
-    "terser": "^5.36.0",
+    "@eslint/eslintrc": "^3.3.5",
+    "@eslint/js": "^10.0.1",
+    "@microsoft/api-extractor": "^7.58.0",
+    "@types/node": "^25.5.2",
+    "@typescript-eslint/eslint-plugin": "^8.58.0",
+    "@typescript-eslint/parser": "^8.58.0",
+    "eslint": "^10.1.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.5",
+    "eslint-plugin-unused-imports": "^4.4.1",
+    "prettier": "^3.8.1",
+    "terser": "^5.46.1",
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
     "tslib": "^2.8.1",
-    "tsup": "^8.3.5",
-    "typescript": "^5.6.3"
+    "tsup": "^8.5.1",
+    "typescript": "^6.0.2"
   }
 }

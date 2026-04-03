@@ -8,17 +8,19 @@
     "forceConsistentCasingInFileNames": true,
     "outDir": "./dist",
     "esModuleInterop": true,
-    "module": "ESNext",
-    "moduleResolution": "node",
+    "module": "esnext",
+    "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "sourceMap": true,
     "isolatedModules": true,
     "noEmit": false,
     "emitDeclarationOnly": true,
     "declaration": true,
-    "baseUrl": "src",
     "paths": {
-      "structures/*": ["structures/*"]
+      "structures/*": ["./src/structures/*"],
+      "commands/*": ["./src/commands/*"],
+      "events/*": ["./src/events/*"],
+      "buttons/*": ["./src/buttons/*"]
     },
     "incremental": true
   },
