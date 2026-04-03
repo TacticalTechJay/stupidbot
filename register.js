@@ -53,14 +53,14 @@ const commands = [
             name: 'YouTube Music',
             value: 'ytmsearch:',
           },
-          {
-            name: 'Spotify',
-            value: 'spsearch:',
-          },
           // {
-          //   name: 'Deezer',
-          //   value: 'dzsearch:',
+          //   name: 'Spotify',
+          //   value: 'spsearch:',
           // },
+          {
+            name: 'Deezer',
+            value: 'dzsearch:',
+          },
           {
             name: 'SoundCloud',
             value: 'scsearch:',
@@ -162,52 +162,6 @@ const commands = [
         name: 'sook',
         description: "That input thing that's important",
         required: true,
-      },
-    ],
-  },
-  {
-    type: 1,
-    name: 'speak',
-    description: "A dev's speakeasy",
-    options: [
-      {
-        type: 3,
-        name: 'text',
-        description: 'The speaky texty',
-        required: true,
-      },
-      {
-        type: 10,
-        name: 'pitch',
-        description: 'pitch',
-        min_value: 0,
-        max_value: 255,
-      },
-      {
-        type: 10,
-        name: 'speed',
-        description: 'speed',
-        min_value: 0,
-        max_value: 255,
-      },
-      {
-        type: 10,
-        name: 'mouth',
-        description: 'mouth',
-        min_value: 0,
-        max_value: 255,
-      },
-      {
-        type: 10,
-        name: 'throat',
-        description: 'throat',
-        min_value: 0,
-        max_value: 255,
-      },
-      {
-        type: 5,
-        name: 'singmode',
-        description: 'To sing? Or not to sing?',
       },
     ],
   },

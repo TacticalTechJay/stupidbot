@@ -17,13 +17,12 @@ import shuffle from 'commands/shuffle';
 import skip from 'commands/skip';
 import stop from 'commands/stop';
 import volume from 'commands/volume';
-import speak from 'commands/speak';
 import test from 'commands/test';
-import Command from 'structures/Command';
+// import Command from 'structures/Command';
 
-export interface commands {
-  default: Command[];
-}
+// export interface commands {
+//   default: Command[];
+// }
 
 export default [
   die,
@@ -43,7 +42,6 @@ export default [
   seek,
   shuffle,
   skip,
-  speak,
   stop,
   test,
   volume,
