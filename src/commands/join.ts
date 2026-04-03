@@ -30,7 +30,7 @@ export default class join extends Command {
     if (player.playing && !player.paused) {
       const intrctRes = await interaction.reply({
         content:
-          "Might want to pause those tunes if you want me to swap voice channels ^-^\nIf you're sure, press the button below. .u.",
+          "Might want to pause those tunes if you want me to swap voice channels ^-^\nIf you're sure, press the button below.",
         components: [
           {
             type: 1,

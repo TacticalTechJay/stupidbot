@@ -12,7 +12,7 @@ export default class trackStart extends Event {
 
   async exec(p: Player & { lastMsgId: Snowflake }, t: Track) {
     try {
-      let channel = (this.client.channels.cache.get(p.textChannelId) ??
+      const channel = (this.client.channels.cache.get(p.textChannelId) ??
         (await this.client.channels.fetch(p.textChannelId))) as TextChannel;
       if (!p.lastMsgId)
         return (p.lastMsgId = (await channel.send(`Now playing ${t.info.title} by ${t.info.author}`)).id);

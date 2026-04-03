@@ -9,7 +9,7 @@ export default class Event {
       name: string;
     } = {
       name: null,
-    }
+    },
   ) {
     this.client = client;
     this.name = options.name || null;

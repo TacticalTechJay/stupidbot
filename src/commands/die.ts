@@ -22,7 +22,7 @@ export default class die extends Command {
                 ' by ' +
                 player.queue.current.info.author
               : ''
-          }`
+          }`,
         );
         await player.destroy();
       }

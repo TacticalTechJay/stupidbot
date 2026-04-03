@@ -36,12 +36,12 @@ export default class play extends Command {
         {
           query: interaction.options.get('query').value as string,
         },
-        interaction.user
+        interaction.user,
       );
     } catch (e) {
       console.error(inspect(e, { colors: true }));
       return await interaction.editReply(
-        'Something went wrong! If a link was provided, it may not be currently supported.'
+        'Something went wrong! If a link was provided, it may not be currently supported.',
       );
     }
 
@@ -57,7 +57,7 @@ export default class play extends Command {
     else {
       if (res.loadType === 'error') {
         await interaction.editReply(
-          'Something cataclysmic has happened that prevents me from loading this! Try something else'
+          'Something cataclysmic has happened that prevents me from loading this! Try something else',
         );
         console.log(inspect(res, false, 5, true));
         return;
@@ -67,11 +67,11 @@ export default class play extends Command {
     if (!player.playing) {
       await player.play();
       return await interaction.editReply(
-        `Now playing [${res.tracks[0].info.title}](${res.tracks[0].info.uri})`
+        `Now playing [${res.tracks[0].info.title}](${res.tracks[0].info.uri})`,
       );
     }
     return await interaction.editReply(
-      `Added [${res.tracks[0].info.title}](${res.tracks[0].info.uri}) to the queue!`
+      `Added [${res.tracks[0].info.title}](${res.tracks[0].info.uri}) to the queue!`,
     );
   }
 }

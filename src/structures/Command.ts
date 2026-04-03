@@ -6,10 +6,13 @@ export default class Command {
   devOnly: boolean;
   constructor(
     client,
-    options = {
+    options: {
+      name: string | null;
+      devOnly: boolean;
+    } = {
       name: null,
       devOnly: false,
-    }
+    },
   ) {
     this.client = client;
     this.name = options.name || null;

@@ -13,7 +13,7 @@ export default class search extends Command {
 
   async exec(interaction: ChatInputCommandInteraction) {
     const member = interaction.member as GuildMember;
-    const source = (interaction.options.get('source')?.value || 'spsearch:') as string;
+    const source = (interaction.options.get('source')?.value || 'dzsearch:') as string;
     const query = interaction.options.get('query').value as string;
 
     if (!member.voice?.channelId) return await interaction.reply('Gotta be in a voice channel :3');
@@ -43,22 +43,22 @@ export default class search extends Command {
         {
           query: source + query,
         },
-        interaction.user
+        interaction.user,
       );
     } catch (e) {
       console.error(inspect(e, { colors: true }));
       return await interaction.editReply(
-        'Something went wrong! If a link was provided, it may not be currently supported.'
+        'Something went wrong! If a link was provided, it may not be currently supported.',
       );
     }
 
     if (res.loadType === 'error')
       return await interaction.editReply(
-        'Something cataclysmic has happened that prevents me from searching! Try something else'
+        'Something cataclysmic has happened that prevents me from searching! Try something else',
       );
     if (res.tracks < 1) return await interaction.editReply("Couldn't find a track... 😦");
 
-    let resp = [];
+    const resp = [];
     for (const t of res.tracks) {
       const durMins = Math.floor(t.info.duration / 60_000),
         durSecs = Math.floor((t.info.duration - durMins * 60_000) / 1_000),
@@ -94,7 +94,7 @@ export default class search extends Command {
         }
         this.client.lavalink.emit('playerQueueEmptyEnd', player);
         player.destroy();
-      }, 31_000)
+      }, 31_000),
     );
 
     await new Promise((r) => setTimeout(r, 30_000));

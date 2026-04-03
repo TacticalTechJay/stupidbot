@@ -13,9 +13,9 @@ export default class playerQueueEmptyEnd extends Event {
   async exec(
     p: Player & {
       lastMsgId: Snowflake;
-    }
+    },
   ) {
-    let channel = (this.client.channels.cache.get(p.textChannelId) ??
+    const channel = (this.client.channels.cache.get(p.textChannelId) ??
       (await this.client.channels.fetch(p.textChannelId))) as TextChannel;
     try {
       if (p.lastMsgId) await channel.messages.delete(p.lastMsgId);

@@ -45,7 +45,7 @@ export default class seek extends Command {
 
     if (player.position + seekeed > player.queue.current.info.duration)
       return await interaction.reply(
-        "If you're gonna skip over that much content, might as well use /skip... :/"
+        "If you're gonna skip over that much content, might as well use /skip... :/",
       );
     if (player.position + seekeed < 0)
       return await interaction.reply("I can't go that far, it'll be before the song started!");
@@ -61,7 +61,7 @@ export default class seek extends Command {
       posMins = Math.floor(position / 60_000),
       posSecs = Math.floor((position - posMins * 60_000) / 1_000);
     return await interaction.reply(
-      `✨ Swoosh ✨\nThere goes that progress bar, right where you need it. You\'re now at ${posMins}:${posSecs}.`
+      `✨ Swoosh ✨\nThere goes that progress bar, right where you need it. You\'re now at ${posMins}:${posSecs}.`,
     );
   }
 }

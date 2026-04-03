@@ -22,7 +22,7 @@ export default class raw extends Event {
         reactEvent.d.emoji.name === '❌'
       )
         return await this.client.rest.delete(
-          Routes.channelMessage(reactEvent.d.channel_id, reactEvent.d.message_id)
+          Routes.channelMessage(reactEvent.d.channel_id, reactEvent.d.message_id),
         );
     }
   }

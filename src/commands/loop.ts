@@ -17,7 +17,7 @@ export default class loop extends Command {
 
     if (!type)
       return await interaction.reply(
-        player.repeatMode === 'off' ? 'Currently not looping.' : `Looping by ${player.repeatMode}`
+        player.repeatMode === 'off' ? 'Currently not looping.' : `Looping by ${player.repeatMode}`,
       );
 
     if (!member.voice.channelId) return await interaction.reply('Gotta be in a voice channel. :3');

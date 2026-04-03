@@ -35,7 +35,7 @@ export default class nowplaying extends Command {
         (posSecs < 10 ? '0' : '') + posSecs
       }/${durMins}:${(durSecs < 10 ? '0' : '') + durSecs} (${leftoverM} minute${
         leftoverM > 1 ? 's' : ''
-      } ${leftoverS} second${leftoverS > 1 ? 's' : ''} left)`
+      } ${leftoverS} second${leftoverS > 1 ? 's' : ''} left)`,
     );
   }
 }

@@ -20,9 +20,10 @@ export default class evalC extends Command {
       } else {
         evaled = await (0, eval)(input);
       }
-      let evaluation = inspect(evaled, { depth: 1 });
-      let dataType = Array.isArray(evaled) ? 'Array<' : typeof evaled,
+      const evaluation = inspect(evaled, { depth: 1 }),
         dataTypes = [];
+      let dataType = Array.isArray(evaled) ? 'Array<' : typeof evaled;
+
       if (~dataType.indexOf('<')) {
         evaled.forEach((d) => {
           if (~dataTypes.indexOf(Array.isArray(d) ? 'Array' : typeof d)) return;

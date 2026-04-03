@@ -1,5 +1,5 @@
-import { Attachment, ChatInputCommandInteraction, GuildMember } from 'discord.js';
-import { createWriteStream } from 'fs';
+import { ChatInputCommandInteraction, GuildMember } from 'discord.js';
+import { SearchResult, UnresolvedSearchResult } from 'lavalink-client';
 import Command from 'structures/Command';
 import MusicClient from 'structures/MusicClient';
 
@@ -29,19 +29,19 @@ export default class playfile extends Command {
     if (player.voiceChannelId !== member.voice.channelId)
       return await interaction.reply("No, you can't do that.");
     if (!player.connected) await player.connect();
-    let res;
+    let res: SearchResult | UnresolvedSearchResult;
     try {
       await interaction.deferReply();
       res = await player.search(
         {
           query: attch.url,
         },
-        interaction.user
+        interaction.user,
       );
     } catch (e) {
       console.error(e);
       return await interaction.editReply(
-        'Looks like something went wrong when loading this file. Try a different type!'
+        'Looks like something went wrong when loading this file. Try a different type!',
       );
     }
     if (res.tracks.length == 0)
@@ -51,11 +51,11 @@ export default class playfile extends Command {
     if (!player.playing) {
       await player.play();
       return await interaction.editReply(
-        `Now playing [${res.tracks[0].info.title}](${res.tracks[0].info.uri})`
+        `Now playing [${res.tracks[0].info.title.replace(/[*_`]/gi, (t) => `\\${t}`)}](${res.tracks[0].info.uri})`,
       );
     }
     return await interaction.editReply(
-      `Added [${res.tracks[0].info.title}](${res.tracks[0].info.uri}) to the queue!`
+      `Added [${res.tracks[0].info.title.replace(/[*_`]/gi, (t) => `\\${t}`)}](${res.tracks[0].info.uri}) to the queue!`,
     );
   }
 }

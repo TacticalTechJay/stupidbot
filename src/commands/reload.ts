@@ -27,6 +27,7 @@ export default class reload extends Command {
       });
       await this.client.loadCommands();
       await this.client.loadEvents();
+      if (!!gc) gc();
       return await interaction.editReply({
         content: 'Reloaded.',
       });
