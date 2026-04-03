@@ -1,12 +1,7 @@
-import { UUID } from 'crypto';
 import {
   BaseInteraction,
-  ButtonBuilder,
-  ButtonComponent,
   ButtonInteraction,
-  ButtonStyle,
   ChatInputCommandInteraction,
-  EmbedBuilder,
   GuildMember,
   StringSelectMenuInteraction,
 } from 'discord.js';
@@ -53,7 +48,7 @@ export default class interactionCreate extends Event {
           {
             query: interaction.values[0],
           },
-          interaction.user
+          interaction.user,
         );
         await interaction.update({
           components: [
@@ -88,120 +83,54 @@ export default class interactionCreate extends Event {
       else {
         if (res.loadType === 'error')
           return await interaction.followUp(
-            'Something cataclysmic has happened that prevents me from loading this! Try something else'
+            'Something cataclysmic has happened that prevents me from loading this! Try something else',
           );
         return await interaction.followUp("Couldn't find a track... 😦");
       }
       if (!player.playing) {
         await player.play();
         return await interaction.followUp(
-          `Now playing [${res.tracks[0].info.title}](<${res.tracks[0].info.uri}>)`
+          `Now playing [${res.tracks[0].info.title}](<${res.tracks[0].info.uri}>)`,
         );
       }
       return await interaction.followUp(
-        `Added [${res.tracks[0].info.title}](<${res.tracks[0].info.uri}>) to the queue!`
+        `Added [${res.tracks[0].info.title}](<${res.tracks[0].info.uri}>) to the queue!`,
       );
     }
   }
   private async handleButton(interaction: ButtonInteraction) {
-    if (!!interaction.customId.match(/^\w+Test/)) {
-      // if (!this.client.devs.includes(interaction.user.id))
-      //   return await interaction.reply({
-      //     content: 'Nuh uh!',
-      //     flags: 'Ephemeral',
-      //   });
-      if (interaction.message.interactionMetadata.user.id !== interaction.member.user.id)
-        return await interaction.reply('User unautherized! ⚠️\nACTIVATING BOYKISSER RAY!!!!');
-      try {
-        await interaction.update({
-          content: 'Spaghetti',
-          components: [],
-        });
-      } catch (e) {
-        void e;
-      }
-      return;
-    }
-    if (!!interaction.customId.match(/^transfer_\d+/)) {
-      console.log(interaction.context);
-      const player = this.client.lavalink.getPlayer(interaction.guildId);
-      await player.changeVoiceState({
-        voiceChannelId: /^transfer_(?<channelId>\d+)/.exec(interaction.customId).groups.channelId,
+    // if (!!interaction.customId.match(/^\w+Test/)) {
+    //   // if (!this.client.devs.includes(interaction.user.id))
+    //   //   return await interaction.reply({
+    //   //     content: 'Nuh uh!',
+    //   //     flags: 'Ephemeral',
+    //   //   });
+    //   if (interaction.message.interactionMetadata.user.id !== interaction.member.user.id)
+    //     return await interaction.reply('User unautherized! ⚠️\nACTIVATING BOYKISSER RAY!!!!');
+    //   try {
+    //     await interaction.update({
+    //       content: 'Spaghetti',
+    //       components: [],
+    //     });
+    //   } catch (e) {
+    //     void e;
+    //   }
+    //   return;
+    // }
+    const buttonThings = interaction.customId.split('_');
+    const btnCommand = this.client.btnCommands.get(buttonThings.shift());
+    if (!btnCommand)
+      return await interaction.reply({
+        content: 'This command is not implemented yet. Let the dev know.',
+        flags: 'Ephemeral',
       });
-      await interaction.message.delete();
-      return await interaction.reply('Done! ^w^');
-    }
-    const player = this.client.lavalink.getPlayer(interaction.guildId);
-    const buttonClose = new ButtonBuilder()
-      .setCustomId('close')
-      .setEmoji({ name: '❌' })
-      .setStyle(ButtonStyle.Secondary);
-    if (interaction.customId === 'close')
-      return (
-        (await interaction.message.delete()) &&
-        this.client.cacheTracks.delete(interaction.message.embeds[0].footer.text.split(' | ')[2] as UUID)
-      );
-    if (!player || !player.queue.current)
-      return await interaction.update({ components: [{ type: 1, components: [buttonClose] }] });
-
-    const args = interaction.message.embeds[0].footer.text.split(' | '),
-      page = args[0]
-        .split(' ')[1]
-        .split('/')
-        .map((n) => parseInt(n)),
-      cache = this.client.cacheTracks.get(args[2] as UUID);
-    if (!cache) return await interaction.update({ components: [{ type: 1, components: [buttonClose] }] });
-    const { info, pluginInfo } = player.queue.current,
-      playerPos = info.duration - player.position,
-      posMins = Math.floor(playerPos / 60_000),
-      posSecs = Math.floor((playerPos - posMins * 60_000) / 1_000),
-      npText = `Now Playing${(player.repeatMode === 'track' && ' (🔂) ') || ''}:\n[${info.title}](${
-        info.uri
-      }) by [${info.author}](${pluginInfo.artistUrl}) [${posMins}:${
-        (posSecs < 10 ? '0' : '') + posSecs
-      } left]`,
-      embed = new EmbedBuilder(interaction.message.embeds[0]).setThumbnail(info.artworkUrl),
-      // @ts-ignore
-      buttonPrev = new ButtonBuilder(interaction.message.components[0].components[0].data),
-      // @ts-ignore
-      buttonNext = new ButtonBuilder(interaction.message.components[0].components[1].data);
-
-    this.client.cacheTracks.set(args[2] as UUID, { ...cache, lastInteract: Date.now() });
-
-    if (interaction.customId === 'next') {
-      const trackSel = cache.tracks.slice(page[0] * 10, 10 + page[0] * 10);
-      embed
-        .setFooter({
-          text: `Page: ${page[0] + 1}/${page[1]} | Tracks: ${cache.tracks.length} | ${args[2]}`,
-        })
-        .setDescription(
-          `${npText}\n\nUp next${(player.repeatMode === 'queue' && ' (🔁) ') || ''}:\n${
-            trackSel.length < 1 ? 'No upcoming tracks! :3' : trackSel.join('\n')
-          }`
-        );
-      if (page[0] + 1 > 1) buttonPrev.setDisabled(false);
-      if (page[0] + 1 == page[1]) buttonNext.setDisabled(true);
-      return await interaction.update({
-        embeds: [embed],
-        components: [{ type: 1, components: [buttonPrev, buttonNext, buttonClose] }],
-      });
-    }
-    if (interaction.customId === 'prev') {
-      const trackSel = cache.tracks.slice((page[0] - 2) * 10, 10 + (page[0] - 2) * 10);
-      embed
-        .setFooter({
-          text: `Page: ${page[0] - 1}/${page[1]} | Tracks: ${cache.tracks.length} | ${args[2]}`,
-        })
-        .setDescription(
-          `${npText}\n\nUp next${(player.repeatMode === 'queue' && ' (🔁) ') || ''}:\n${
-            trackSel.length < 1 ? 'No upcoming tracks! :3' : trackSel.join('\n')
-          }`
-        );
-      if (page[0] - 1 == 1) buttonPrev.setDisabled(true);
-      if (page[0] - 1 < page[1]) buttonNext.setDisabled(false);
-      return await interaction.update({
-        embeds: [embed],
-        components: [{ type: 1, components: [buttonPrev, buttonNext, buttonClose] }],
+    try {
+      btnCommand.exec(interaction, buttonThings);
+    } catch (e) {
+      console.log(e);
+      return interaction.reply({
+        content: 'This button does not seem to be working properly... Sorry!',
+        flags: 'Ephemeral',
       });
     }
   }

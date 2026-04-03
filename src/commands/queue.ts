@@ -1,7 +1,7 @@
 import { ButtonBuilder, ButtonStyle, ChatInputCommandInteraction, EmbedBuilder } from 'discord.js';
-import { randomUUID, UUID } from 'node:crypto';
 import Command from 'structures/Command';
 import MusicClient from 'structures/MusicClient';
+
 export default class queue extends Command {
   constructor(client: MusicClient) {
     super(client, {
@@ -10,40 +10,45 @@ export default class queue extends Command {
     });
   }
 
+  private async doTimeoutThings(
+    interaction: ChatInputCommandInteraction,
+    client: MusicClient,
+    msgId: string,
+  ) {
+    const cache = client.cacheTracks.get(msgId);
+    if (!cache) return;
+    const msg = await interaction.channel.messages.fetch(cache?.msgId);
+    if (!msg) return;
+    if (Date.now() - (cache.lastInteract || msg.createdTimestamp) > 300_000) {
+      client.cacheTracks.delete(msgId);
+      return await msg.edit({
+        components: [
+          {
+            type: 1,
+            // @ts-ignore
+            components: [msg.components[0].components[2].data],
+          },
+        ],
+      });
+    } else
+      setTimeout(() => {
+        this.doTimeoutThings(interaction, client, msgId);
+      }, 60_000);
+  }
+
   async exec(interaction: ChatInputCommandInteraction) {
     const player = this.client.lavalink.getPlayer(interaction.guildId);
     if (!player || !player.queue.current) return await interaction.reply('The queue is empty!');
 
-    const uuid = randomUUID();
     const buttonClose = new ButtonBuilder()
-      .setCustomId('close')
+      .setCustomId('queue_close')
       .setEmoji({ name: '❌' })
       .setStyle(ButtonStyle.Secondary);
-    async function doTimeoutThings(client: MusicClient, uuid: UUID) {
-      const cache = client.cacheTracks.get(uuid);
-      if (!cache) return;
-      const msg = await interaction.channel.messages.fetch(cache?.msgId);
-      if (!msg) return;
-      if (Date.now() - (cache.lastInteract || msg.createdTimestamp) > 300000) {
-        client.cacheTracks.delete(uuid);
-        return await msg.edit({
-          components: [
-            {
-              type: 1,
-              components: [buttonClose],
-            },
-          ],
-        });
-      } else
-        setTimeout(() => {
-          doTimeoutThings(client, uuid);
-        }, 60000);
-    }
     const embed = new EmbedBuilder({
       footer: {
         text: `Page: 1/${
           player.queue.tracks.length < 1 ? 'None' : Math.ceil(player.queue.tracks.length / 10)
-        } | Tracks enqueued: ${player.queue.tracks.length} | ${uuid}`,
+        } | Tracks enqueued: ${player.queue.tracks.length}`,
       },
       thumbnail: { url: player.queue.current.info.artworkUrl },
       author: {
@@ -59,7 +64,7 @@ export default class queue extends Command {
           durMins = Math.floor(duration / 60_000),
           durSecs = Math.floor((duration - durMins * 60_000) / 1_000);
         return `**${i + 1}.** [${t.info.title}](${t.info.uri}) by [${t.info.author}](${
-          t.pluginInfo.artistUrl
+          t.pluginInfo.artistUrl || t.pluginInfo.albumUrl || t.pluginInfo.artworkUrl || t.info.artworkUrl
         }) [${durMins}:${(durSecs < 10 ? '0' : '') + durSecs}]`;
       });
     embed.setDescription(
@@ -69,7 +74,7 @@ export default class queue extends Command {
         player.queue.current.pluginInfo.artistUrl || player.queue.current.info.artworkUrl
       }) [${posMins}:${(posSecs < 10 ? '0' : '') + posSecs} left]\n\nUp next${
         (player.repeatMode === 'queue' && ' (🔁) ') || ''
-      }:\n${tracks.length < 1 ? 'No upcoming tracks! :3' : tracks.slice(0, 10).join('\n')}`
+      }:\n${tracks.length < 1 ? 'No upcoming tracks! :3' : tracks.slice(0, 10).join('\n')}`,
     );
     const queueMessage = await interaction.reply({
       withResponse: true,
@@ -81,12 +86,12 @@ export default class queue extends Command {
                 type: 1,
                 components: [
                   new ButtonBuilder()
-                    .setCustomId('prev')
+                    .setCustomId('queue_prev')
                     .setEmoji({ name: '◀' })
                     .setStyle(ButtonStyle.Primary)
                     .setDisabled(true),
                   new ButtonBuilder()
-                    .setCustomId('next')
+                    .setCustomId('queue_next')
                     .setEmoji({ name: '▶' })
                     .setStyle(ButtonStyle.Primary),
                   buttonClose,
@@ -101,12 +106,14 @@ export default class queue extends Command {
             ],
     });
 
-    if (tracks.length > 10)
-      this.client.cacheTracks.set(uuid, {
+    if (tracks.length > 10) {
+      this.client.cacheTracks.set(queueMessage.resource.message.id, {
         msgId: queueMessage.resource.message.id,
         guildId: interaction.guildId,
         tracks,
-      }) && (await doTimeoutThings(this.client, uuid));
+      });
+      await this.doTimeoutThings(interaction, this.client, queueMessage.resource.message.id);
+    }
 
     return;
   }

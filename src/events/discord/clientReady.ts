@@ -10,7 +10,12 @@ export default class Ready extends Event {
 
   async exec() {
     console.log('Readying up...');
-    await this.client.lavalink.init({ ...this.client.user });
+    try {
+      await this.client.lavalink.init({ ...this.client.user });
+    } catch (e) {
+      console.error(e);
+      process.exit(1);
+    }
     console.log(`Ready as ${this.client.user.tag}`);
   }
 }

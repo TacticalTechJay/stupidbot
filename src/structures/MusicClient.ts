@@ -1,21 +1,34 @@
-import { Client, Collection, CommandInteraction, Snowflake, StringSelectMenuInteraction } from 'discord.js';
+import {
+  ButtonInteraction,
+  Client,
+  Collection,
+  CommandInteraction,
+  Snowflake,
+  StringSelectMenuInteraction,
+} from 'discord.js';
 import { LavalinkManager } from 'lavalink-client';
 import Event from 'structures/Event';
 import Command from 'structures/Command';
+import ButtonCommand from 'structures/ButtonCommand';
 import { sep } from 'path';
-import { UUID } from 'node:crypto';
 
 export default class MusicClient extends Client {
   devs: Snowflake[];
   lavalink: LavalinkManager;
   cacheTracks: Collection<
-    UUID,
+    string,
     { msgId: Snowflake; guildId: Snowflake; tracks: string[]; lastInteract?: number }
   >;
   commands: Collection<
     string,
     Command & {
-      exec: (interaction: CommandInteraction | StringSelectMenuInteraction) => void | null | any;
+      exec: (interaction: CommandInteraction | StringSelectMenuInteraction) => void | null;
+    }
+  >;
+  btnCommands: Collection<
+    string,
+    ButtonCommand & {
+      exec: (interaction: ButtonInteraction, ops: string[]) => void | null;
     }
   >;
   events: Collection<Snowflake, Event>;
@@ -27,6 +40,7 @@ export default class MusicClient extends Client {
     this.cacheTracks = new Collection();
     this.events = new Collection();
     this.commands = new Collection();
+    this.btnCommands = new Collection();
 
     this.lavalink = new LavalinkManager({
       nodes: [
@@ -46,7 +60,7 @@ export default class MusicClient extends Client {
       emitNewSongsOnly: true,
       playerOptions: {
         clientBasedPositionUpdateInterval: 150,
-        defaultSearchPlatform: 'spsearch',
+        defaultSearchPlatform: 'dzsearch',
         onDisconnect: {
           autoReconnect: false,
           destroyPlayer: true,
@@ -62,10 +76,11 @@ export default class MusicClient extends Client {
 
     this.loadEvents();
     this.loadCommands();
+    this.loadBtnCmds();
   }
 
   async loadEvents(): Promise<void> {
-    console.log(`Importing event folder`);
+    console.log('Importing event folder');
     delete require.cache[
       require.resolve(`.${sep.replace(sep, '/')}events${sep.replace(sep, '/')}_index.cjs`)
     ];
@@ -95,8 +110,32 @@ export default class MusicClient extends Client {
     return;
   }
 
+  async loadBtnCmds(): Promise<void> {
+    console.log('Importing button commands folder');
+    const cache =
+      require.cache[require.resolve(`.${sep.replace(sep, '/')}buttons${sep.replace(sep, '/')}_index.cjs`)];
+    if (cache?.exports)
+      for (const exports of cache.exports)
+        delete require.cache[
+          require.resolve(`.${sep.replace(sep, '/')}buttons${sep.replace(sep, '/')}_index.cjs`)
+        ].exports[exports];
+    delete require.cache[
+      require.resolve(`.${sep.replace(sep, '/')}buttons${sep.replace(sep, '/')}_index.cjs`)
+    ];
+
+    const commands = await import(
+      `.${sep.replace(sep, '/')}buttons${sep.replace(sep, '/')}_index.cjs?time=${Date.now()}`
+    );
+    for (const c of commands.default) {
+      const command = new c(this);
+      console.log(`Loading ${command.name}`);
+      this.btnCommands.set(command.name, command);
+    }
+    return;
+  }
+
   async loadCommands(): Promise<void> {
-    console.log(`Importing command folder`);
+    console.log('Importing command folder');
     const cache =
       require.cache[require.resolve(`.${sep.replace(sep, '/')}commands${sep.replace(sep, '/')}_index.cjs`)];
     if (cache?.exports)
@@ -107,8 +146,6 @@ export default class MusicClient extends Client {
     delete require.cache[
       require.resolve(`.${sep.replace(sep, '/')}commands${sep.replace(sep, '/')}_index.cjs`)
     ];
-    if (global.gc) global.gc();
-    else console.log('No garbage collector :(');
 
     const commands = await import(
       `.${sep.replace(sep, '/')}commands${sep.replace(sep, '/')}_index.cjs?time=${Date.now()}`
