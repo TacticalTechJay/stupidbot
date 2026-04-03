@@ -51,11 +51,11 @@ export default class playfile extends Command {
     if (!player.playing) {
       await player.play();
       return await interaction.editReply(
-        `Now playing [${res.tracks[0].info.title.replace(/[*_`]/gi, (t) => `\\${t}`)}](${res.tracks[0].info.uri})`,
+        `Now playing [${res.tracks[0].info.title.replace(/[*_`~]/gi, (t) => `${t}`)}](${res.tracks[0].info.uri})`,
       );
     }
     return await interaction.editReply(
-      `Added [${res.tracks[0].info.title.replace(/[*_`]/gi, (t) => `\\${t}`)}](${res.tracks[0].info.uri}) to the queue!`,
+      `Added [${res.tracks[0].info.title.replace(/[*_`~]/gi, (t) => `${t}`)}](${res.tracks[0].info.uri}) to the queue!`,
     );
   }
 }
