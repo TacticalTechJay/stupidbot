@@ -15,6 +15,6 @@ export interface events {
 }
 
 export default {
-  discord: [interactionCreate, raw, ready, voiceStateUpdate],
+  discord: [interactionCreate, raw, ready],
   lavalink: [playerQueueEmptyEnd, trackError, trackStart],
 };
