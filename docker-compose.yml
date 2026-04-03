@@ -68,7 +68,7 @@ services:
         FROM node:lts-alpine
         WORKDIR /bot
 
-        COPY package*.json ./
+        COPY package.json ./
         COPY .yarn ./.yarn
         COPY yarn.lock ./
         COPY .yarnrc.yml ./
@@ -82,6 +82,7 @@ services:
         RUN rm -rf /tmp/* /root/*
         RUN yarn cache clean --all
         RUN yarn tsup
+        RUN rm -rf src
 
         ENTRYPOINT ["node", "--expose-gc", "dist/index.cjs"]
     stop_grace_period: 5s
