@@ -2432,13 +2432,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lavalink-client@npm:^2.9.11":
-  version: 2.9.11
-  resolution: "lavalink-client@npm:2.9.11"
+"lavalink-client@npm:^2.10.1":
+  version: 2.10.1
+  resolution: "lavalink-client@npm:2.10.1"
   dependencies:
     tslib: "npm:^2.8.1"
     ws: "npm:^8.19.0"
-  checksum: 10c0/ac8e820c041c78808b833685b76979e90825562fec09c8cb8172f6f8eaf509db7f14a2b1743601571fed9418515e53a73863e372dbb3158cd38f8ddcbbb75a7d
+  checksum: 10c0/c208fe774c7c6fe0889047a97f37c1c9ba3e1872e55cbb8e93a0ce19436f2520be960bb3c10e8753d4b7c6e63d5c46f881c108e86cab40b54e8cacb483291e9a
   languageName: node
   linkType: hard
 
@@ -3290,7 +3290,7 @@ __metadata:
     eslint-plugin-prettier: "npm:^5.5.5"
     eslint-plugin-unused-imports: "npm:^4.4.1"
     ffmpeg-static: "npm:^5.3.0"
-    lavalink-client: "npm:^2.9.11"
+    lavalink-client: "npm:^2.10.1"
     opusscript: "npm:^0.1.1"
     prettier: "npm:^3.8.1"
     terser: "npm:^5.46.1"
