@@ -30,7 +30,7 @@ export default class interactionCreate extends Event {
         return await interaction.message.delete();
       const member = interaction.member as GuildMember;
       const player =
-        this.client.lavalink.getPlayer(interaction.guildId) ??
+        this.client.lavalink.getPlayer(interaction.guildId) ||
         this.client.lavalink.createPlayer({
           guildId: interaction.guildId,
           voiceChannelId: member.voice.channelId,
@@ -87,7 +87,7 @@ export default class interactionCreate extends Event {
           );
         return await interaction.followUp("Couldn't find a track... 😦");
       }
-      if (!player.playing) {
+      if (!player.playing && !player.paused) {
         await player.play();
         return await interaction.followUp(
           `Now playing [${res.tracks[0].info.title}](<${res.tracks[0].info.uri}>)`,
@@ -97,38 +97,24 @@ export default class interactionCreate extends Event {
         `Added [${res.tracks[0].info.title}](<${res.tracks[0].info.uri}>) to the queue!`,
       );
     }
+    return await interaction.reply({
+      content: 'Not implemented :(',
+      flags: 'Ephemeral',
+    });
   }
   private async handleButton(interaction: ButtonInteraction) {
-    // if (!!interaction.customId.match(/^\w+Test/)) {
-    //   // if (!this.client.devs.includes(interaction.user.id))
-    //   //   return await interaction.reply({
-    //   //     content: 'Nuh uh!',
-    //   //     flags: 'Ephemeral',
-    //   //   });
-    //   if (interaction.message.interactionMetadata.user.id !== interaction.member.user.id)
-    //     return await interaction.reply('User unautherized! ⚠️\nACTIVATING BOYKISSER RAY!!!!');
-    //   try {
-    //     await interaction.update({
-    //       content: 'Spaghetti',
-    //       components: [],
-    //     });
-    //   } catch (e) {
-    //     void e;
-    //   }
-    //   return;
-    // }
     const buttonThings = interaction.customId.split('_');
     const btnCommand = this.client.btnCommands.get(buttonThings.shift());
     if (!btnCommand)
       return await interaction.reply({
-        content: 'This command is not implemented yet. Let the dev know.',
+        content: 'This button is not implemented yet. Let the dev know.',
         flags: 'Ephemeral',
       });
     try {
-      btnCommand.exec(interaction, buttonThings);
+      await btnCommand.exec(interaction, buttonThings);
     } catch (e) {
       console.log(e);
-      return interaction.reply({
+      return await interaction.reply({
         content: 'This button does not seem to be working properly... Sorry!',
         flags: 'Ephemeral',
       });
@@ -144,10 +130,10 @@ export default class interactionCreate extends Event {
     if (command.devOnly && !this.client.devs.includes(interaction.user.id))
       return interaction.reply({ content: 'No', flags: 'Ephemeral' });
     try {
-      return command.exec(interaction);
+      await command.exec(interaction);
     } catch (e) {
       console.log(e);
-      return interaction.reply('Aww, something went wrong with this command D:');
+      return await interaction.reply('Aww, something went wrong with this command D:');
     }
   }
 }
