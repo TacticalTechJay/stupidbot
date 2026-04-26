@@ -21,9 +21,9 @@ export default class nowplaying extends Command {
     str = str.slice(0, pos) + '+' + str.slice(pos, str.length);
 
     const posMins = Math.floor(posR / 60_000),
-      posSecs = Math.floor((posR - posMins * 60_000) / 1_000),
+      posSecs = ('0' + Math.floor((posR - posMins * 60_000) / 1_000)).slice(-2),
       durMins = Math.floor(duration / 60_000),
-      durSecs = Math.floor((duration - durMins * 60_000) / 1_000),
+      durSecs = ('0' + Math.floor((duration - durMins * 60_000) / 1_000)).slice(-2),
       leftover = duration - posR,
       leftoverM = Math.floor(leftover / 60_000),
       leftoverS = Math.floor((leftover - leftoverM * 60_000) / 1_000);
@@ -32,8 +32,8 @@ export default class nowplaying extends Command {
       `Currently ${player.repeatMode === 'track' ? 'looping over' : 'playing'} [${
         player.queue.current.info.title
       }](<${player.queue.current.info.uri}>) by ${player.queue.current.info.author}\n${str}\n${posMins}:${
-        (posSecs < 10 ? '0' : '') + posSecs
-      }/${durMins}:${(durSecs < 10 ? '0' : '') + durSecs} (${leftoverM} minute${
+        posSecs
+      }/${durMins}:${durSecs} (${leftoverM} minute${
         leftoverM > 1 ? 's' : ''
       } ${leftoverS} second${leftoverS > 1 ? 's' : ''} left)`,
     );

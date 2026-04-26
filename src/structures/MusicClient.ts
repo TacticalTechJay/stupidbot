@@ -95,7 +95,6 @@ export default class MusicClient extends Client {
         // @ts-ignore
         event.exec(...args);
       });
-      this.events.set(event.name, event);
     }
     for (const e of events.default.lavalink) {
       const event = new e(this);
@@ -105,7 +104,6 @@ export default class MusicClient extends Client {
         // @ts-ignore
         event.exec(...args);
       });
-      this.events.set(event.name, event);
     }
     return;
   }

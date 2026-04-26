@@ -10,17 +10,13 @@ export default class queue extends Command {
     });
   }
 
-  private async doTimeoutThings(
-    interaction: ChatInputCommandInteraction,
-    client: MusicClient,
-    msgId: string,
-  ) {
-    const cache = client.cacheTracks.get(msgId);
+  private async doTimeoutThings(interaction: ChatInputCommandInteraction, msgId: string) {
+    const cache = this.client.cacheTracks.get(msgId);
     if (!cache) return;
     const msg = await interaction.channel.messages.fetch(cache?.msgId);
     if (!msg) return;
     if (Date.now() - (cache.lastInteract || msg.createdTimestamp) > 300_000) {
-      client.cacheTracks.delete(msgId);
+      this.client.cacheTracks.delete(msgId);
       return await msg.edit({
         components: [
           {
@@ -32,7 +28,7 @@ export default class queue extends Command {
       });
     } else
       setTimeout(() => {
-        this.doTimeoutThings(interaction, client, msgId);
+        this.doTimeoutThings(interaction, msgId);
       }, 60_000);
   }
 
@@ -58,21 +54,21 @@ export default class queue extends Command {
     });
     const playerPos = player.queue.current.info.duration - player.position,
       posMins = Math.floor(playerPos / 60_000),
-      posSecs = Math.floor((playerPos - posMins * 60_000) / 1_000),
+      posSecs = ('0' + Math.floor((playerPos - posMins * 60_000) / 1_000)).slice(-2),
       tracks = player.queue.tracks?.map((t, i) => {
         const duration = t.info.duration,
           durMins = Math.floor(duration / 60_000),
-          durSecs = Math.floor((duration - durMins * 60_000) / 1_000);
+          durSecs = ('0' + Math.floor((duration - durMins * 60_000) / 1_000)).slice(-2);
         return `**${i + 1}.** [${t.info.title}](${t.info.uri}) by [${t.info.author}](${
           t.pluginInfo.artistUrl || t.pluginInfo.albumUrl || t.pluginInfo.artworkUrl || t.info.artworkUrl
-        }) [${durMins}:${(durSecs < 10 ? '0' : '') + durSecs}]`;
+        }) [${durMins}:${durSecs}]`;
       });
     embed.setDescription(
       `Now Playing${(player.repeatMode === 'track' && ' (🔂) ') || ''}:\n[${
         player.queue.current.info.title
       }](${player.queue.current.info.uri}) by [${player.queue.current.info.author}](${
         player.queue.current.pluginInfo.artistUrl || player.queue.current.info.artworkUrl
-      }) [${posMins}:${(posSecs < 10 ? '0' : '') + posSecs} left]\n\nUp next${
+      }) [${posMins}:${posSecs} left]\n\nUp next${
         (player.repeatMode === 'queue' && ' (🔁) ') || ''
       }:\n${tracks.length < 1 ? 'No upcoming tracks! :3' : tracks.slice(0, 10).join('\n')}`,
     );
@@ -112,7 +108,7 @@ export default class queue extends Command {
         guildId: interaction.guildId,
         tracks,
       });
-      await this.doTimeoutThings(interaction, this.client, queueMessage.resource.message.id);
+      await this.doTimeoutThings(interaction, queueMessage.resource.message.id);
     }
 
     return;

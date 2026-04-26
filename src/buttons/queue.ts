@@ -28,12 +28,10 @@ export default class queue extends ButtonCommand {
     const { info, pluginInfo } = player.queue.current,
       playerPos = info.duration - player.position,
       posMins = Math.floor(playerPos / 60_000),
-      posSecs = Math.floor((playerPos - posMins * 60_000) / 1_000),
+      posSecs = ('0' + Math.floor((playerPos - posMins * 60_000) / 1_000)).slice(-2),
       npText = `Now Playing${(player.repeatMode === 'track' && ' (🔂) ') || ''}:\n[${info.title}](${
         info.uri
-      }) by [${info.author}](${pluginInfo.artistUrl}) [${posMins}:${
-        (posSecs < 10 ? '0' : '') + posSecs
-      } left]`,
+      }) by [${info.author}](${pluginInfo.artistUrl}) [${posMins}:${posSecs} left]`,
       embed = new EmbedBuilder(interaction.message.embeds[0]).setThumbnail(info.artworkUrl),
       // @ts-ignore
       buttonPrev = new ButtonBuilder(interaction.message.components[0].components[0].data),

@@ -47,11 +47,11 @@ const commands = [
         choices: [
           {
             name: 'YouTube',
-            value: 'ytsearch:',
+            value: 'ytsearch',
           },
           {
             name: 'YouTube Music',
-            value: 'ytmsearch:',
+            value: 'ytmsearch',
           },
           // {
           //   name: 'Spotify',
@@ -59,11 +59,11 @@ const commands = [
           // },
           {
             name: 'Deezer',
-            value: 'dzsearch:',
+            value: 'dzsearch',
           },
           {
             name: 'SoundCloud',
-            value: 'scsearch:',
+            value: 'scsearch',
           },
         ],
       },
@@ -228,10 +228,6 @@ const admands = [
   {
     name: 'reload',
     description: 'Reload the bot.',
-  },
-  {
-    name: 'test',
-    description: 'Testing discord changes.',
   },
 ];
 

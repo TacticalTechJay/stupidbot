@@ -1,4 +1,5 @@
 import { ChatInputCommandInteraction, GuildMember } from 'discord.js';
+import { SearchResult } from 'lavalink-client';
 import Command from 'structures/Command';
 import MusicClient from 'structures/MusicClient';
 import { inspect } from 'util';
@@ -15,7 +16,7 @@ export default class play extends Command {
     const member = interaction.member as GuildMember;
     if (!member.voice?.channelId) return await interaction.reply('Gotta be in a voice channel :3');
     const player =
-      this.client.lavalink.getPlayer(interaction.guildId) ??
+      this.client.lavalink.getPlayer(interaction.guildId) ||
       this.client.lavalink.createPlayer({
         guildId: interaction.guildId,
         voiceChannelId: member.voice.channelId,
@@ -29,15 +30,15 @@ export default class play extends Command {
       return await interaction.reply("No, you can't do that.");
     if (!player.connected) await player.connect();
 
-    let res;
+    let res: SearchResult;
     try {
       await interaction.deferReply();
-      res = await player.search(
+      res = (await player.search(
         {
           query: interaction.options.get('query').value as string,
         },
         interaction.user,
-      );
+      )) as SearchResult;
     } catch (e) {
       console.error(inspect(e, { colors: true }));
       return await interaction.editReply(
@@ -45,7 +46,7 @@ export default class play extends Command {
       );
     }
 
-    if (!!res.playlist) {
+    if (res.loadType == 'playlist') {
       for (const track of res.tracks) {
         await player.queue.add(track);
       }
