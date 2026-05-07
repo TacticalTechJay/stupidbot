@@ -31,14 +31,12 @@ export default class MusicClient extends Client {
       exec: (interaction: ButtonInteraction, ops: string[]) => void | null;
     }
   >;
-  events: Collection<Snowflake, Event>;
 
   constructor(options) {
     super(options);
 
     this.devs = process.env.DEVS.split(',');
     this.cacheTracks = new Collection();
-    this.events = new Collection();
     this.commands = new Collection();
     this.btnCommands = new Collection();
 
