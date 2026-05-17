@@ -1,5 +1,6 @@
 import die from 'commands/die';
 import evalC from 'commands/eval';
+import info from 'commands/info';
 import join from 'commands/join';
 import loop from 'commands/loop';
 import move from 'commands/move';
@@ -27,6 +28,7 @@ import test from 'commands/test';
 export default [
   die,
   evalC,
+  info,
   join,
   loop,
   move,

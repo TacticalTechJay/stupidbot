@@ -199,6 +199,43 @@ const commands = [
       },
     ],
   },
+  {
+    type: 1,
+    name: 'info',
+    description: 'Get info on a song!',
+    options: [
+      {
+        type: 3,
+        name: 'query',
+        description: 'Query the various things of music.',
+        required: true,
+      },
+      {
+        type: 3,
+        name: 'source',
+        description: 'Pick your poison ;)',
+        required: false,
+        choices: [
+          {
+            name: 'YouTube',
+            value: 'ytsearch',
+          },
+          {
+            name: 'YouTube Music',
+            value: 'ytmsearch',
+          },
+          {
+            name: 'Deezer',
+            value: 'dzsearch',
+          },
+          {
+            name: 'SoundCloud',
+            value: 'scsearch',
+          },
+        ],
+      },
+    ],
+  },
 ];
 
 const admands = [

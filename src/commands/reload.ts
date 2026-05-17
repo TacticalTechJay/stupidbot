@@ -15,7 +15,7 @@ export default class reload extends Command {
     try {
       await interaction.deferReply({ flags: 'Ephemeral' });
       await build({
-        entry: ['src/index.ts', 'src/commands/_index.ts', 'src/events/_index.ts'],
+        entry: ['src/index.ts', 'src/commands/_index.ts', 'src/events/_index.ts', 'src/buttons/_index.ts'],
         platform: 'node',
         format: 'cjs',
         bundle: true,
@@ -27,7 +27,8 @@ export default class reload extends Command {
       });
       await this.client.loadCommands();
       await this.client.loadEvents();
-      if (!!gc) gc();
+      await this.client.loadBtnCmds();
+      if (!!global.gc) global.gc();
       return await interaction.editReply({
         content: 'Reloaded.',
       });

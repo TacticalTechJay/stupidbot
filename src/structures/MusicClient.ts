@@ -6,7 +6,7 @@ import {
   Snowflake,
   StringSelectMenuInteraction,
 } from 'discord.js';
-import { LavalinkManager } from 'lavalink-client';
+import { LavalinkManager, LavaSearchResponse, SearchResult } from 'lavalink-client';
 import Event from 'structures/Event';
 import Command from 'structures/Command';
 import ButtonCommand from 'structures/ButtonCommand';
@@ -19,16 +19,19 @@ export default class MusicClient extends Client {
     string,
     { msgId: Snowflake; guildId: Snowflake; tracks: string[]; lastInteract?: number }
   >;
+  cacheRes: Collection<`${string}-${string}`, LavaSearchResponse | SearchResult>;
   commands: Collection<
     string,
     Command & {
-      exec: (interaction: CommandInteraction | StringSelectMenuInteraction) => void | null;
+      exec: (
+        interaction: CommandInteraction | StringSelectMenuInteraction,
+      ) => Promise<void | null> | void | null;
     }
   >;
   btnCommands: Collection<
     string,
     ButtonCommand & {
-      exec: (interaction: ButtonInteraction, ops: string[]) => void | null;
+      exec: (interaction: ButtonInteraction, ops: string[]) => Promise<void | null>;
     }
   >;
 
@@ -37,6 +40,7 @@ export default class MusicClient extends Client {
 
     this.devs = process.env.DEVS.split(',');
     this.cacheTracks = new Collection();
+    this.cacheRes = new Collection();
     this.commands = new Collection();
     this.btnCommands = new Collection();
 

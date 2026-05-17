@@ -8,7 +8,13 @@ services:
       - lavalink
     restart: unless-stopped
   lavalink:
-    image: ghcr.io/lavalink-devs/lavalink:4
+    # image: ghcr.io/lavalink-devs/lavalink:4-alpine
+    build:
+      dockerfile_inline: |
+        FROM ghcr.io/lavalink-devs/lavalink:4-alpine
+        USER root
+        RUN apk add --no-cache libudev-zero-dev
+        USER lavalink
     container_name: lavalink
     restart: unless-stopped
     hostname: lavalink
@@ -44,12 +50,7 @@ services:
       PLUGINS_LAVASRC_PROVIDERS_2: ytsearch:\"%ISRC%\"
       PLUGINS_LAVASRC_PROVIDERS_3: ytmsearch:%QUERY%
       PLUGINS_LAVASRC_PROVIDERS_4: ytsearch:%QUERY%
-      PLUGINS_LAVASRC_SOURCES_SPOTIFY: false
       PLUGINS_LAVASRC_SOURCES_DEEZER: true
-      PLUGINS_LAVASRC_SOURCES_YOUTUBE: true
-      PLUGINS_LAVASRC_SPOTIFY_PLAYLIST_LOAD_LIMIT: 4
-      PLUGINS_LAVASRC_SPOTIFY_ALBUM_LOAD_LIMIT: 4
-      PLUGINS_LAVASRC_SPOTIFY_RESOLVE_ARTISTS_IN_SEARCH: true
       PLUGINS_LAVASRC_DEEZER_FORMATS: "['FLAC', 'MP3_320', 'MP3_256', 'MP3_128', 'MP3_64', 'AAC_64']"
       PLUGINS_YOUTUBE_ENABLED: true
       PLUGINS_YOUTUBE_ALLOW_SEARCH: true
