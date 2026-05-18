@@ -68,26 +68,22 @@ services:
     env_file: .env
     build:
       dockerfile_inline: |
-        FROM node:lts-alpine
+        FROM oven/bun:alpine AS base
         WORKDIR /bot
 
-        COPY package.json ./
-        COPY .yarn ./.yarn
-        COPY yarn.lock ./
-        COPY .yarnrc.yml ./
-        COPY eslint.config.mjs ./
-        COPY tsup.config.ts ./
-        COPY tsconfig.json ./
-        COPY src ./src
+        FROM base AS install
+        RUN mkdir -p /tmp/dev
+        COPY package.json bun.lock /tmp/dev/
+        RUN cd /tmp/dev && bun install --frozen-lockfile
 
-        RUN corepack enable
-        RUN yarn install --immutable
-        RUN rm -rf /tmp/* /root/*
-        RUN yarn cache clean --all
-        RUN yarn tsup
+        FROM base AS runner
+        COPY --from=install /tmp/dev/node_modules node_modules
+        COPY . .
+        RUN bun run tsup
         RUN rm -rf src
 
-        ENTRYPOINT ["node", "--expose-gc", "dist/index.cjs"]
+        USER bun
+        ENTRYPOINT ["bun", "run", "--expose-gc", "dist"]
     stop_grace_period: 5s
     networks:
       - lavalink

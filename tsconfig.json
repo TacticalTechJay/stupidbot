@@ -1,6 +1,9 @@
 {
+  "$schema": "https://www.schemastore.org/tsconfig",
+  "docs": "https://bun.com/docs/typescript",
   "compilerOptions": {
     "target": "ESNext",
+    "types": ["bun"],
     "lib": ["ESNext"],
     "allowJs": false,
     "skipLibCheck": true,
@@ -24,9 +27,6 @@
     },
     "incremental": true
   },
-  "ts-node": {
-    "require": ["tsconfig-paths/register"]
-  },
   "include": ["**/*.ts"],
-  "exclude": ["node_modules", "dist", ".yarn"]
+  "exclude": ["node_modules", "dist"]
 }
