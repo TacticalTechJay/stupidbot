@@ -7,7 +7,6 @@ import {
   StringSelectMenuInteraction,
 } from 'discord.js';
 import { LavalinkManager, LavaSearchResponse, SearchResult } from 'lavalink-client';
-import Event from 'structures/Event';
 import Command from 'structures/Command';
 import ButtonCommand from 'structures/ButtonCommand';
 import { sep } from 'path';
