@@ -7,6 +7,7 @@ export default class queue extends ButtonCommand {
     super(client, 'queue');
   }
 
+  // ops: queue_{close|next|prev as String}
   async exec(interaction: ButtonInteraction, ops: string[]) {
     const player = this.client.lavalink.getPlayer(interaction.guildId);
     const buttonClose = new ButtonBuilder()

@@ -13,6 +13,7 @@ export default class result extends ButtonCommand {
     super(client, 'result');
   }
 
+  // ops: result_{close|tracks|artists as String}
   async exec(interaction: ButtonInteraction, ops: string[]) {
     const otherThingy = new ContainerBuilder()
         .setAccentColor(0xad74f7)

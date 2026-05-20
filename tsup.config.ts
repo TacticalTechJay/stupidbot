@@ -9,5 +9,5 @@ export default defineConfig({
   treeshake: true,
   clean: true,
   sourcemap: false,
-  external: ['tsup'],
+  external: ['tsup', 'bun'],
 });

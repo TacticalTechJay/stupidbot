@@ -7,6 +7,7 @@ export default class transfer extends ButtonCommand {
     super(client, 'transfer');
   }
 
+  // ops: transfer_{channelId as String}
   async exec(interaction: ButtonInteraction, ops: string[]) {
     const player = this.client.lavalink.getPlayer(interaction.guildId);
     await player.changeVoiceState({
