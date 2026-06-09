@@ -14,7 +14,7 @@ export default class volume extends Command {
     const player = this.client.lavalink.getPlayer(interaction.guildId);
 
     if (!member.voice?.channelId) return await interaction.reply('Gotta be in a voice channel. :3');
-    if (!player || !player?.queue.current) return await interaction.reply('Nothing is playing!');
+    if (!player) return await interaction.reply('Nothing is playing!');
     if (player.voiceChannelId !== member.voice.channelId)
       return await interaction.reply('Wrong voice channel, join mine!');
     await player.setVolume(interaction.options.get('level').value as number, false);
