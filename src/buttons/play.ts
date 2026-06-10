@@ -47,7 +47,7 @@ export default class play extends ButtonCommand {
     } catch (e) {
       void e;
     }
-    if (res.tracks.length === 0) return await interaction.followUp('No tracks found.');
+    if (res.tracks.length === 0) return await interaction.reply('No tracks found.');
     if (ops[0] === 'artist')
       for (const tr of res.tracks) {
         await player.queue.add(tr);
