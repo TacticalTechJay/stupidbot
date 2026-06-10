@@ -28,6 +28,7 @@ async function graceKill() {
       );
       await player.destroy();
     }
+  await client.destroy();
 }
 
 process.on('uncaughtException', async (err) => {
@@ -37,7 +38,10 @@ process.on('uncaughtException', async (err) => {
   await graceKill();
   process.exit(1);
 });
-
+process.on('SIGTERM', async () => {
+  await graceKill();
+  process.exit(0);
+});
 process.on('SIGINT', async () => {
   await graceKill();
   process.exit(0);
